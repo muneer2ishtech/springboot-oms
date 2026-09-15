@@ -3,7 +3,7 @@ Order Management system using Spring Boot Rest APIs
 
 
 ## Tech stack
-- Java: 25
+- Java: 17
 - Spring Boot: 4.0.x
 - Database: MariaDB / MySQL
 - Database Migration: Flyway
