@@ -1,40 +1,50 @@
 services:
-  ishtech-oms-mariadb:
-    image: mariadb:latest
-    container_name: ishtech_oms_mariadb_container
+  ishtech-springboot-oms-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVER_PORT: ${SERVER_PORT_REMOTE:-${SERVER_PORT:-8080}}
+        APP_VERSION: ${APP_VERSION}
+    image: muneer2ishtech/ishtech-springboot-oms${APP_VERSION:+:$APP_VERSION}
+    container_name: ishtech_springboot_oms_app
     environment:
-      MYSQL_ROOT_PASSWORD: Qwer4321
-      LANG: C.UTF-8
-      TZ: Europe/Helsinki
+      - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE:-dev}
+      - SPRING_DATASOURCE_URL=jdbc:mariadb://ishtech-springboot-oms-mariadb:3306/ishtech_oms_dev_db
+      - SPRING_FLYWAY_URL=jdbc:mariadb://ishtech-springboot-oms-mariadb:3306/ishtech_oms_dev_db
+      - TZ=${TZ:-Europe/Helsinki}
     ports:
-      - 23306:3306
-    volumes:
-      - mariadb_data:/var/lib/mysql
-      - ./src/main/resources/db/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
-    networks:
-      - ishtech-oms-network
-    healthcheck:
-      test: ["CMD", "mariadb-admin", "ping", "--silent"]
-      interval: 5m
-      start_period: 30s
-
-  ishtech-oms-springboot:
-    image: muneer2ishtech/spring-boot-oms:latest
-    container_name: ishtech_oms_springboot_container
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mariadb://ishtech-oms-mariadb:3306/ishtech_oms_dev_db
-      SPRING_FLYWAY_URL: jdbc:mariadb://ishtech-oms-mariadb:3306/ishtech_oms_dev_db
-    ports:
-      - 8080:8080
+      - "${SERVER_PORT_LOCAL:-${SERVER_PORT:-8080}}:${SERVER_PORT_REMOTE:-${SERVER_PORT:-8080}}"
     depends_on:
-      ishtech-oms-mariadb:
+      ishtech-springboot-oms-mariadb:
         condition: service_healthy
     networks:
-      - ishtech-oms-network
+      - ishtech-springboot-oms-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${SERVER_PORT_LOCAL:-${SERVER_PORT:-8080}}/actuator/health"]
+      start_period: 60s
 
-networks:
-  ishtech-oms-network:
-    driver: bridge
+  ishtech-springboot-oms-mariadb:
+    image: mariadb:lts
+    container_name: ishtech_springboot_oms_mariadb
+    environment:
+      - MYSQL_ROOT_PASSWORD=Qwer4321
+      - LANG=C.UTF-8
+      - TZ=${TZ:-Europe/Helsinki}
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - ishtech_springboot_oms_mariadb_data:/var/lib/mysql
+      - ./src/test/resources/db/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+    networks:
+      - ishtech-springboot-oms-network
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "--silent"]
+      start_period: 45s
 
 volumes:
-  mariadb_data:
+  ishtech_springboot_oms_mariadb_data:
+
+networks:
+  ishtech-springboot-oms-network:
+    driver: bridge

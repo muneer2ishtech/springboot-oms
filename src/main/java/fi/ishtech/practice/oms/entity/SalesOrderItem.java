@@ -1,11 +1,8 @@
 package fi.ishtech.practice.oms.entity;
 
+import java.io.Serial;
 import java.math.BigDecimal;
 
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-
-import fi.ishtech.base.entity.BaseStandardEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -14,6 +11,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
+import fi.ishtech.base.entity.BaseStandardEntity;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -33,6 +36,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class SalesOrderItem extends BaseStandardEntity {
 
+	@Serial
 	private static final long serialVersionUID = 3971866180515025837L;
 
 	@Column(name = "sales_order_id", nullable = false, insertable = true, updatable = false)

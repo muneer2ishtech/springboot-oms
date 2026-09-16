@@ -2,6 +2,8 @@ package fi.ishtech.practice.oms.controller;
 
 import java.net.URI;
 
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +22,7 @@ import fi.ishtech.practice.oms.payload.CustomerDiscountVo;
 import fi.ishtech.practice.oms.payload.filter.CustomerDiscountFilterParams;
 import fi.ishtech.practice.oms.service.CustomerDiscountService;
 import fi.ishtech.practice.oms.spec.CustomerDiscountSpec;
-import jakarta.validation.Valid;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**

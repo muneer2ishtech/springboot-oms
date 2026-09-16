@@ -8,28 +8,28 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.4.3</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<version>4.0.8</version>
+		<relativePath />
 	</parent>
 
-	<groupId>fi.ishtech.practice</groupId>
-	<artifactId>spring-boot-oms</artifactId>
-	<version>0.2.0</version>
+	<groupId>fi.ishtech.practice.springboot</groupId>
+	<artifactId>ishtech-springboot-oms</artifactId>
+	<version>0.3.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>spring-boot-oms</name>
+	<name>springboot-oms</name>
 	<description>Order Management system using Spring Boot Rest APIs</description>
 
 	<licenses>
 		<license>
-			<name>BSD-2-Clause</name>
+			<name>0BSD</name>
+			<url>https://opensource.org/license/0bsd/</url>
 		</license>
 	</licenses>
 
 	<developers>
 		<developer>
 			<name>Muneer Ahmed Syed</name>
-			<email>muneer@ishtech.fi</email>
 			<url>https://github.com/muneer2ishtech</url>
 			<roles>
 				<role>architect</role>
@@ -39,21 +39,28 @@
 	</developers>
 
 	<scm>
-		<url>https://github.com/muneer2ishtech/spring-boot-oms</url>
+		<url>https://github.com/muneer2ishtech/springboot-oms</url>
 	</scm>
 
 	<properties>
-		<java.version>21</java.version>
+		<java.version>25</java.version>
 
-		<ishtech-base-jpa.version>0.3.0-SNAPSHOT</ishtech-base-jpa.version>
-		<ishtech-i18n.version>2.1.0</ishtech-i18n.version>
+		<ishtech-springboot-jwtauth.version>3.3.0-SNAPSHOT</ishtech-springboot-jwtauth.version>
 
+		<jjwt.version>0.13.0</jjwt.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
-		<jjwt.version>0.12.6</jjwt.version>
-		<springdoc-openapi.version>2.8.5</springdoc-openapi.version>
+		<mockito.version>5.23.0</mockito.version>
+
+		<springdoc.version>3.0.3</springdoc.version>
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>fi.ishtech.springboot</groupId>
+			<artifactId>ishtech-springboot-jwtauth-api</artifactId>
+			<version>${ishtech-springboot-jwtauth.version}</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
@@ -82,29 +89,21 @@
 		</dependency>
 
 		<dependency>
-			<groupId>fi.ishtech.base</groupId>
-			<artifactId>ishtech-base-jpa</artifactId>
-			<version>${ishtech-base-jpa.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>fi.ishtech.core</groupId>
-			<artifactId>ishtech-i18n</artifactId>
-			<version>${ishtech-i18n.version}</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<optional>true</optional>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.mapstruct</groupId>
-			<artifactId>mapstruct</artifactId>
-			<version>${mapstruct.version}</version>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>${jjwt.version}</version>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>${jjwt.version}</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
@@ -117,33 +116,23 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.mariadb.jdbc</groupId>
+			<artifactId>mariadb-java-client</artifactId>
+			<scope>runtime</scope>
+		</dependency>
+		<!--
+		<dependency>
 			<groupId>com.mysql</groupId>
 			<artifactId>mysql-connector-j</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		-->
 
 		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-api</artifactId>
-			<version>${jjwt.version}</version>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-impl</artifactId>
-			<version>${jjwt.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>io.jsonwebtoken</groupId>
-			<artifactId>jjwt-jackson</artifactId>
-			<version>${jjwt.version}</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>${springdoc-openapi.version}</version>
-		</dependency>
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -154,6 +143,13 @@
 			<artifactId>spring-security-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>${springdoc.version}</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
