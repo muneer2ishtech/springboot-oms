@@ -82,6 +82,10 @@ Table [t_sales_order] contains physical column name [customer_id] referred to by
 - See [DB-SETUP.md](./DB-SETUP.md) for setting up dev database
 
 
+## Known Issues
+- See [KNOWN-ISSUES.md](./KNOWN-ISSUES.md)
+
+
 ## Build and Run
 
 - Ensure the port, db properties etc are correct in application-xxx.properties

@@ -18,8 +18,9 @@ WORKDIR /app
 
 COPY --from=build /app/target/ishtech-springboot-oms-*.jar ishtech-springboot-oms.jar
 
+# For building image with custom ports and properties
 ARG TZ=Europe/Helsinki
-ENV TZ=$TZ
+ENV TZ=${TZ}
 
 ARG SERVER_PORT=8080
 ENV SERVER_PORT=${SERVER_PORT}
