@@ -23,7 +23,7 @@ The JUnit test uses H2 and doesn't run Flyway, so `./mvnw clean install` still p
 ### Steps to reproduce
 
 ```sh
-SERVER_PORT_LOCAL=8383 DB_PORT=33306 docker compose up --build
+SERVER_PORT_LOCAL=8282 DB_PORT=23306 docker compose up --build
 docker logs ishtech_springboot_oms_app
 ```
 
