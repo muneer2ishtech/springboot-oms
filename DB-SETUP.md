@@ -25,11 +25,11 @@
     - `mysql -u ishtech_oms_dev_user -pishtech_oms_dev_pass -D ishtech_oms_dev_db`
 
 ### Flyway migration files
-- Path `src/main/resources/db/migration/`
+- Path `src/main/resources/db/migration/mysql`
 - To create migration files with date and time in the file name
     - E.g. `V20251109_214359__create_table_product.sql`
 
 ```
-touch src/main/resources/db/migration/V$(date +"%Y%m%d_%H%M%S")__create_table_TODO_PUT_TABLE_NAME_WITHOUT_PREFIX.sql
+touch src/main/resources/db/migration/mysql/V$(date +"%Y%m%d_%H%M%S")__create_table_TODO_PUT_TABLE_NAME_WITHOUT_PREFIX.sql
 
 ```
