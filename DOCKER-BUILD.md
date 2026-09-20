@@ -87,6 +87,7 @@ docker run \
         - `DB_PORT` if skipped DB will be exposed on default `3306`
         - `SERVER_PORT_REMOTE` if skipped spring-boot app will run on default `8080`
         - `SERVER_PORT_LOCAL` if skipped spring-boot app will be exposed on default `8080`
+        - `APP_VERSION` is the tag of the built image, as `muneer2ishtech/ishtech-springboot-oms:$APP_VERSION`, if skipped the image is tagged `muneer2ishtech/ishtech-springboot-oms:latest`
 
 ```
 SERVER_PORT_LOCAL=8282 \
