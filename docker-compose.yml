@@ -31,7 +31,7 @@ services:
       LANG: C.UTF-8
       TZ: ${TZ:-Europe/Helsinki}
     ports:
-      - "${DB_PORT:-3306}:3306"
+      - "${DB_PORT_LOCAL:-${DB_PORT:-3306}}:3306"
     volumes:
       - ishtech_springboot_oms_mariadb_data:/var/lib/mysql
       - ./src/test/resources/db/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
