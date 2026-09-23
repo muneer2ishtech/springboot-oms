@@ -1,13 +1,13 @@
 <!-- Repo-specific instructions. The shared IshTech rules live in .claude/rules/ and are identical across repos; don't put repo-specific content there. -->
 # springboot-oms
 
-The owner's standing instructions are in `.claude/rules/` (`owner-workflow.md`, `git-and-branches.md`, `versions-and-releases.md`, `build-and-test.md`, `build-tooling.md`, `documentation.md`). They apply to every task in this repo. This file adds only what is specific to this repo.
+The owner's standing instructions are in `.claude/rules/` (`owner-workflow.md`, `git-and-branches.md`, `versions-and-releases.md`, `build-and-test.md`, `build-tooling.md`, `documentation.md`, `repositories.md`). They apply to every task in this repo. This file adds only what is specific to this repo.
 
 ## About this repo
 - It's a runnable Spring Boot application, so it has test Levels 1, 2 and 3.
 - It's built with Maven (`pom.xml`); use `./mvnw`.
 - Nothing depends on `springboot-oms`, so dependent tests (`rules/build-and-test.md`, section "Dependent tests") don't apply.
-- The upstream ishtech SNAPSHOT dependencies that the test Level 3 precondition refers to are declared in `pom.xml`.
+- Upstream libraries: `ishtech-springboot-jwtauth`, and its own upstream libraries (`rules/repositories.md`). Its version is declared in `pom.xml`; these are the upstream SNAPSHOTs that the test Level 3 precondition refers to.
 
 ## Read the doc before doing the thing
 The docs are the source of truth. Don't guess commands: open the matching file and section first, and follow its links.
