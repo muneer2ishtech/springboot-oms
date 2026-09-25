@@ -3,11 +3,17 @@ Order Management system using Spring Boot Rest APIs
 
 
 ## Tech stack
-- Java: 21
+
+- JDK 25 (default)
+- Other supported JDK versions:
+  - JDK 21
+  - JDK 17
 - Spring Boot: 4.0.x
 - Database: MariaDB / MySQL
 - Database Migration: Flyway
 - Containerization: Docker
+
+Which application version (Docker image tag) to use for your JDK version: [JDK-VERSIONS.md](JDK-VERSIONS.md).
 
 ##
 
@@ -15,7 +21,7 @@ Order Management system using Spring Boot Rest APIs
 
 
 ## Design
-- [ishtech-jpa-base](https://github.com/ishtech/ishtech-base-jpa) - Foundational JPA and other base classes
+- [ishtech-base-jpa](https://github.com/ishtech/ishtech-base-jpa) - Foundational JPA and other base classes
 - [ishtech-springboot-jwtauth](https://github.com/ishtech/ishtech-springboot-jwtauth) - For Authentication & Authorization
 
 ### Assumptions:
@@ -67,7 +73,7 @@ Table [t_sales_order] contains physical column name [customer_id] referred to by
 - For details you can see swagger documentation
     - [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
     - [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
-    - [http://localhost:8080/v3/api-docs.yaml](http://localhost:8080/v3//v3/api-docs.yaml)
+    - [http://localhost:8080/v3/api-docs.yaml](http://localhost:8080/v3/api-docs.yaml)
 
 - Note: Check and update URI and PORT on which application is running
 
@@ -80,6 +86,10 @@ Table [t_sales_order] contains physical column name [customer_id] referred to by
 
 ## Database
 - See [DB-SETUP.md](./DB-SETUP.md) for setting up dev database
+
+
+## Known Issues
+- See [KNOWN-ISSUES.md](./KNOWN-ISSUES.md)
 
 
 ## Build and Run
