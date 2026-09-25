@@ -100,3 +100,35 @@ The Elasticsearch connection is required at start-up, and neither the tests nor 
 2. Docker: add an Elasticsearch service to the compose files, and set `spring.elasticsearch.uris` for the app container to that service.
 3. Documentation: document the Elasticsearch requirement and how to start it (see the TODO in `README.md`, section "Build and Run").
 
+---
+
+## 3. On branch `elastic`, the Elasticsearch product search applies only the last filter given
+
+**Status:** Open
+**Impact:** High — `GET /api/v1/elastic/products` returns wrong results whenever more than one filter is given: all filters except one are ignored.
+**Affects:** Branch `elastic` only: `ProductServiceImpl.searchFromElasticsearch(...)`, used by `GET /api/v1/elastic/products`.
+
+### Description
+
+`searchFromElasticsearch` creates one `Query.Builder` and, for each filter present in `ProductFilterParams`, calls `match` (name), `range` (minimum unit price), `range` (maximum unit price), `term` (is active) or `match` (description) on that same builder, in that order. A `Query` holds exactly one query type, and each of these calls replaces the one before it, so the query sent to Elasticsearch contains only the last filter that was set. Which filter survives, from highest to lowest precedence: description, is active, maximum unit price, minimum unit price, name.
+
+For example, a search with both a minimum and a maximum unit price is sent with the maximum-price range only. So the fix in commit `a3db033` ("fix max unit price query in elastic search", `gte` → `lte`) takes effect only when neither is active nor description is given.
+
+Confirmed on 2026-09-25 with a standalone check against `co.elastic.clients:elasticsearch-java` 9.2.9, the version `elastic` resolves: calling `match`, `range`, `range` and `term` on one `Query.Builder`, then `build()`, gives the query `{"term":{"isActive":{"value":true}}}`. Not yet reproduced through the API, because that needs a running Elasticsearch (issue 2).
+
+### Steps to reproduce
+
+1. Start Elasticsearch on `localhost:9200` and the application on branch `elastic` with profile `dev`.
+2. Create two active products, one with unit price 5 and one with unit price 50 (see [CURL-INFO.md](./CURL-INFO.md) for the product API and for obtaining a token).
+3. Call `GET /api/v1/elastic/products?minUnitPrice=10&maxUnitPrice=100`.
+
+Expected: only the product with unit price 50.
+Actual (predicted from the check above, not yet run): both products, because only `unitPrice <= 100` is applied.
+
+### Likely cause
+
+Each filter is set as the whole query on a shared `Query.Builder`, instead of being combined into one query.
+
+### Suggested fix
+
+Collect the filters into a `bool` query: the `match` queries as `must` clauses, and the price `range` and `isActive` `term` queries as `filter` clauses. Build one `range` query with both `gte` and `lte` when both prices are given. Then add a test that builds the query from `ProductFilterParams` with several filters set and asserts that every filter is present.
