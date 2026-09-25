@@ -95,6 +95,7 @@ Table [t_sales_order] contains physical column name [customer_id] referred to by
 ## Build and Run
 
 - Ensure the port, db properties etc are correct in application-xxx.properties
+- TODO (branch `elastic`): document that the application and its JUnit tests need an Elasticsearch server at `http://localhost:9200` (the default of `spring.elasticsearch.uris`), how to start one locally and with docker compose, and how to point `spring.elasticsearch.uris` at another server. Until then, see [KNOWN-ISSUES.md](./KNOWN-ISSUES.md), issue 2.
 
 ### Maven
 
