@@ -60,3 +60,43 @@ Related: that method calls `ex.getMessage().contains(...)` without a null check,
 1. In `CustomerDiscountServiceImpl`, verify that the referenced customer, and the product when `productId` is given, exist before the insert, and throw so the API returns `400` with a message naming the offending field.
 2. Change the handler's fallback so it never returns `ex.getMessage()` to the client: log the exception and return a generic message. `springboot-books-app` commit `ec16a98` addressed the same class of defect, by adding the missing handler rather than by changing the fallback; the fallback itself is the leak here.
 3. Add tests asserting `400`, not `500`, for a non-existent `customerId`, and asserting that the response body contains no SQL, table or constraint names.
+
+---
+
+## 2. On branch `elastic`, the application and its tests fail to start without Elasticsearch on `localhost:9200`
+
+**Status:** Open
+**Impact:** High — test Level 1 (`./mvnw clean install`) fails on any machine without a running Elasticsearch, the CI step "Maven Test" is expected to fail on every push of `elastic` (the workflow runs on pushes to all branches and provides no Elasticsearch), and the application does not start without Elasticsearch in any profile.
+**Affects:** Branch `elastic` only: `OmsApplicationTests.contextLoads`, local runs, docker compose runs and CI. `dev` and `main` have no Elasticsearch dependency.
+
+### Description
+
+Branch `elastic` adds `spring-boot-starter-data-elasticsearch` and the Elasticsearch repository `ProductDocumentRepo`. When the Spring application context starts, it connects to Elasticsearch. Only `application-dev.properties` sets `spring.elasticsearch.uris` (to `http://localhost:9200`); every other profile, including the JUnit test configuration, uses Spring Boot's default, which is also `http://localhost:9200`. If nothing is listening there, the context fails to load with:
+
+```
+java.lang.RuntimeException: Connect to http://localhost:9200 [localhost/127.0.0.1, localhost/0:0:0:0:0:0:0:1] failed: Connection refused: getsockopt
+```
+
+Nothing in the documentation says that Elasticsearch is needed, and none of the `docker-compose*.yml` files defines an Elasticsearch service.
+
+Confirmed on 2026-09-25 on `elastic` at commit `5793328` ("Merge branch 'dev' into elastic"), with nothing listening on port 9200.
+
+### Steps to reproduce
+
+1. Check out branch `elastic`.
+2. Make sure nothing is listening on port 9200.
+3. Run `./mvnw clean verify`.
+
+Expected: the build succeeds.
+Actual: `OmsApplicationTests.contextLoads` fails with `Failed to load ApplicationContext`, caused by the `Connection refused` error above (`Tests run: 1, Failures: 0, Errors: 1`), and the build fails.
+
+### Likely cause
+
+The Elasticsearch connection is required at start-up, and neither the tests nor the run and Docker setups provide an Elasticsearch server or disable the Elasticsearch components.
+
+### Suggested fix
+
+1. Tests: start Elasticsearch for the tests with Testcontainers (`org.testcontainers:elasticsearch` and `@ServiceConnection`), or exclude the Elasticsearch auto-configuration and mock `ProductDocumentRepo` and `ElasticsearchOperations` in tests that don't need them.
+2. Docker: add an Elasticsearch service to the compose files, and set `spring.elasticsearch.uris` for the app container to that service.
+3. Documentation: document the Elasticsearch requirement and how to start it (see the TODO in `README.md`, section "Build and Run").
+
