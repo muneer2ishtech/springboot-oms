@@ -1,10 +1,10 @@
-# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# Build, test a Maven project and release as Docker image. Single job = no artifact passing, one JDK setup.
 
-name: Java CI with Maven
+name: Java CI with Maven and Docker
 
 on:
-  # Only on push to any branches and on publishing release tag
   push:
+    branches: ['**']
   release:
     types: [published]
   workflow_dispatch:
@@ -19,91 +19,15 @@ on:
         default: "false"
 
 jobs:
-  validate-version:
+  maven-docker-build:
     runs-on: ubuntu-latest
-    outputs:
-      APP_VERSION: ${{ steps.validate-project-version.outputs.APP_VERSION }}
+
+    env:
+      MAVEN_CLI_OPTS: "-B -q -s .mvn/settings.xml"
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
-
-      - name: Validate Project Version
-        id: validate-project-version
-        run: |
-          echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
-          echo "GITHUB_REF: $GITHUB_REF"
-          echo "GITHUB_REF_TYPE: $GITHUB_REF_TYPE"
-          echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
-
-          RELEASE_TAG="${{ github.event.release.tag_name }}"
-          echo "RELEASE_TAG: $RELEASE_TAG"
-
-          chmod +x mvnw
-
-          # mvnw does not need Java preinstalled — wrapper downloads it automatically
-          APP_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout 2>/dev/null)
-          echo "POM Version: $APP_VERSION"
-
-          # ---------- PUSH RULE ----------
-          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
-            if [[ "$GITHUB_REF_TYPE" == "branch" ]]; then
-
-              # ---------- MAIN ----------
-              if [[ "$GITHUB_REF_NAME" == "main" ]]; then
-                if [[ "$APP_VERSION" == *"-SNAPSHOT" ]]; then
-                  echo "❌ ERROR: main branch must use RELEASE version (no -SNAPSHOT). Found: $APP_VERSION"
-                  exit 1
-                fi
-
-              # ---------- DEV or ANY OTHER BRANCH ----------
-              else
-                if [[ "$APP_VERSION" != *"-SNAPSHOT" ]]; then
-                  echo "❌ ERROR: Non-main branches must use SNAPSHOT version. Found: $APP_VERSION"
-                  exit 1
-                fi
-              fi
-            fi
-          fi
-
-          # ---------- RELEASE RULE ----------
-          if [[ "$GITHUB_EVENT_NAME" == "release" ]]; then
-            if [[ "$APP_VERSION" == *"-SNAPSHOT" ]]; then
-              echo "❌ ERROR: Release version cannot be SNAPSHOT. Found: $APP_VERSION"
-              exit 1
-            fi
-
-            # clean optional v prefix
-            CLEAN_TAG="${RELEASE_TAG#v}"
-
-            if [[ "$CLEAN_TAG" != "$APP_VERSION" ]]; then
-              echo "❌ ERROR: Tag ($RELEASE_TAG) does NOT match pom version ($APP_VERSION)"
-              exit 1
-            fi
-          fi
-
-          echo "✔ Version + branch/tag validation passed."
-          echo "APP_VERSION=$APP_VERSION" >> $GITHUB_OUTPUT
-
-      - name: Upload repo for downstream jobs
-        uses: actions/upload-artifact@v7
-        with:
-          name: source-code
-          path: |
-            ./
-            ./.mvn/**
-            !./.git*
-          include-hidden-files: true
-
-  build:
-    needs: validate-version
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download source-code from validate-version
-        uses: actions/download-artifact@v8
-        with:
-          name: source-code
 
       - name: Set up JDK 17 + Maven cache
         uses: actions/setup-java@v6
@@ -112,43 +36,84 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Maven Setup
+      # 1. Validate version against branch / release tag
+      - name: Validate Project Version
+        id: validate-project-version
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          MANUAL_DEPLOY: ${{ inputs.manual_deploy }}
         run: |
-          tree .
           chmod +x mvnw
-          echo "MAVEN_CLI_OPTS=-B -q -s .mvn/settings.xml" >> $GITHUB_ENV
+          APP_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout 2>/dev/null)
+          echo "app_version=$APP_VERSION" >> "$GITHUB_OUTPUT"
+          echo "Event=$GITHUB_EVENT_NAME  Ref=$GITHUB_REF_NAME ($GITHUB_REF_TYPE)  Version=$APP_VERSION"
 
+          # ---------- RELEASE RULE ----------
+          if [[ "$GITHUB_EVENT_NAME" == "release" ]]; then
+            if [[ "$APP_VERSION" == *-SNAPSHOT ]]; then
+              echo "❌ ERROR: Release version cannot be SNAPSHOT. Found: $APP_VERSION"
+              exit 1
+            fi
+            if [[ "${RELEASE_TAG#v}" != "$APP_VERSION" ]]; then
+              echo "❌ ERROR: Tag ($RELEASE_TAG) does NOT match pom version ($APP_VERSION)"
+              exit 1
+            fi
+
+          # ---------- PUSH / BRANCH RULE ----------
+          elif [[ "$GITHUB_REF_TYPE" == "branch" ]]; then
+
+            # ---------- MAIN ----------
+            if [[ "$GITHUB_REF_NAME" == "main" ]]; then
+              if [[ "$APP_VERSION" == *-SNAPSHOT ]]; then
+                echo "❌ ERROR: main branch must use RELEASE version (no -SNAPSHOT). Found: $APP_VERSION"
+                exit 1
+              fi
+              if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" && "$MANUAL_DEPLOY" == "true" ]]; then
+                echo "❌ ERROR: main can only be released via a published release tag, not manual deploy."
+                exit 1
+              fi
+
+            # ---------- DEV or ANY OTHER BRANCH ----------
+            else
+              if [[ "$APP_VERSION" != *-SNAPSHOT ]]; then
+                echo "❌ ERROR: Non-main branches must use SNAPSHOT version. Found: $APP_VERSION"
+                exit 1
+              fi
+            fi
+          fi
+
+          # Decide whether this run releases
+          DO_RELEASE=false
+          if [[ "$GITHUB_EVENT_NAME" == "release" ]]; then
+            DO_RELEASE=true
+          elif [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" && "$MANUAL_DEPLOY" == "true" && "$GITHUB_REF_NAME" != "main" ]]; then
+            DO_RELEASE=true
+          fi
+
+          echo "✔ Validation passed (do_release=$DO_RELEASE)"
+          echo "do_release=$DO_RELEASE" >> "$GITHUB_OUTPUT"
+
+      # 2. Compile
       - name: Maven Compile
-        run: |
-          ./mvnw $MAVEN_CLI_OPTS clean compile
+        run: ./mvnw $MAVEN_CLI_OPTS clean compile
 
+      # 3. Test (reuse compiled classes)
       - name: Maven Test
-        run: |
-          ./mvnw $MAVEN_CLI_OPTS test -Dmaven.main.skip=true
+        run: ./mvnw $MAVEN_CLI_OPTS test -Dmaven.main.skip=true
 
-  deploy:
-    needs: [validate-version, build]
-    runs-on: ubuntu-latest
-    # Only run for release OR manual trigger
-    if: |
-      github.event_name == 'release' ||
-      (
-        github.event_name == 'workflow_dispatch' &&
-        inputs.manual_deploy == 'true' &&
-        github.ref_name != 'main'
-      )
-
-    steps:
+      # 4. Release (only when conditions match)
       - name: Login to Docker Hub
+        if: steps.validate-project-version.outputs.do_release == 'true'
         uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build and push Docker image
+        if: steps.validate-project-version.outputs.do_release == 'true'
         uses: docker/build-push-action@v7
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: muneer2ishtech/springboot-oms:${{ needs.validate-version.outputs.APP_VERSION }}
+          tags: muneer2ishtech/ishtech-springboot-oms:${{ steps.validate-project-version.outputs.app_version }}
