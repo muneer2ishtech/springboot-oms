@@ -139,7 +139,7 @@ public class ProductServiceImpl implements ProductService {
 
 		if (params.getMaxUnitPrice() != null) {
 			queryBuilder.range(RangeQuery
-					.of(r -> r.number(f -> f.field(Product_.UNIT_PRICE).gte(params.getMaxUnitPrice().doubleValue()))));
+					.of(r -> r.number(f -> f.field(Product_.UNIT_PRICE).lte(params.getMaxUnitPrice().doubleValue()))));
 		}
 
 		// Only active products
