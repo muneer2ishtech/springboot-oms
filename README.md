@@ -3,11 +3,17 @@ Order Management system using Spring Boot Rest APIs
 
 
 ## Tech stack
-- Java: 25
-- Spring Boot: 3.5.7
+
+- JDK 25 (default)
+- Other supported JDK versions:
+  - JDK 21
+  - JDK 17
+- Spring Boot: 4.0.x
 - Database: MariaDB / MySQL
 - Database Migration: Flyway
 - Containerization: Docker
+
+Which application version (Docker image tag) to use for your JDK version: [JDK-VERSIONS.md](JDK-VERSIONS.md).
 
 ##
 
@@ -15,8 +21,8 @@ Order Management system using Spring Boot Rest APIs
 
 
 ## Design
-- [ishtech-jpa-base](https://github.com/ishtech/ishtech-base-jpa) - Foundational JPA and other base classes
-- [ishtech-springboot-jwtauth](https://github.com/ishtech/ishtech-springboot-jwtauth) - For Authentiation & Authorization
+- [ishtech-base-jpa](https://github.com/ishtech/ishtech-base-jpa) - Foundational JPA and other base classes
+- [ishtech-springboot-jwtauth](https://github.com/ishtech/ishtech-springboot-jwtauth) - For Authentication & Authorization
 
 ### Assumptions:
 1. No multi-tenancy
@@ -67,44 +73,23 @@ Table [t_sales_order] contains physical column name [customer_id] referred to by
 - For details you can see swagger documentation
     - [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)
     - [http://localhost:8080/v3/api-docs](http://localhost:8080/v3/api-docs)
+    - [http://localhost:8080/v3/api-docs.yaml](http://localhost:8080/v3/api-docs.yaml)
+
 - Note: Check and update URI and PORT on which application is running
 
-- For API request/response samples:
+- For API names and descriptions:
+    - See [API-INFO.md](./API-INFO.md)
+
+- For `curl` & `json` request/response samples:
     - See [CURL-INFO.md](./CURL-INFO.md)
 
-- For Authentiation & Authorization APIs:
-    - See [ishtech-springboot-jwtauth](https://github.com/ishtech/ishtech-springboot-jwtauth)
+
+## Database
+- See [DB-SETUP.md](./DB-SETUP.md) for setting up dev database
 
 
-## DB
-
-### Local
-- You need local instance or docker of MariaDB / MySQL
-    - To run using MySQL instead of MariaDB, comment out MariaDB portions and uncomment MySQL portions in `pom.xml` and `application-xxx.properties`
-
-- I have customized docker for various databases
-    - For MariaDB
-        - See [https://github.com/IshTech/docker-db/tree/main/mariadb](https://github.com/IshTech/docker-db/tree/main/mariadb)
-    - For MySQL
-        - See [https://github.com/IshTech/docker-db/tree/main/mysql](https://github.com/IshTech/docker-db/tree/main/mysql)
-
-- Login to DB as `root` and run [init_db.sql](src/test/resources/db/init_db.sql) to setup DB Schema, DB User and Grant privileges
-
-#### DB Access
-- Connect to MariaDB
-    - `mariadb -u istech_oms_dev_user -pishtech_oms_dev_pass -D ishtech_oms_dev_db`
-- Connect to MySQL
-    - `mysql -u istech_oms_dev_user -pishtech_oms_dev_pass -D ishtech_oms_dev_db`
-
-### Flyway migration files
-- Path `src/main/resources/db/migration/`
-- To create migration files with date and time in the file name
-    - E.g. `V20251021_103045__create_table_book.sql`
-
-```
-touch src/main/resources/db/migration/V$(date +"%Y%m%d_%H%M%S")__create_table_TODO_PUT_TABLE_NAME_WITHOUT_PREFIX.sql
-
-```
+## Known Issues
+- See [KNOWN-ISSUES.md](./KNOWN-ISSUES.md)
 
 
 ## Build and Run
@@ -135,36 +120,4 @@ touch src/main/resources/db/migration/V$(date +"%Y%m%d_%H%M%S")__create_table_TO
 
 ### Docker
 
-#### Docker build
-
-- arg for custom `SERVER_PORT` is optional, you can change to desired value or skip, if skipped it will use default `8080`
-
-```
-docker build . \
-  --build-arg SERVER_PORT=8383 \
-  -t "muneer2ishtech/$(./mvnw help:evaluate -Dexpression=project.artifactId -q -DforceStdout 2>/dev/null):$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout 2>/dev/null)"
-
-```
-
-#### Run with docker compose
-
-- Docker compose is self contained and has both spring-boot application and mariadb is present, so  you don't need anything else other than docker
-
-- To stop if running
-    - `docker compose stop`
-
-- To stop and remove including volumes and built images
-    - `docker compose down -v --rmi=local`
-
-- To build and start
-    - You can prefix with env vars as in below example
-    - Below args are optional, you can change to desired value or skip, if skipped they will use default value
-        - `DB_PORT` if skipped DB will be exposed on default `3306`
-        - `SERVER_PORT_REMOTE` if skipped spring-boot app will run on default `8080`
-        - `SERVER_PORT_LOCAL` if skipped spring-boot app will be exposed on default `8080`
-
-```
-SERVER_PORT_LOCAL=8282 DB_PORT=23306 APP_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout 2>/dev/null) \
-docker compose up --build
-
-```
+- See [DOCKER-BUILD.md](./DOCKER-BUILD.md)

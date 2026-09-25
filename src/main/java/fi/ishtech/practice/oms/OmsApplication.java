@@ -2,10 +2,10 @@ package fi.ishtech.practice.oms;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-//@formatter:off
+// @formatter:off
 @SpringBootApplication(scanBasePackages = {
 		"fi.ishtech.springboot.jwtauth",
 		"fi.ishtech.practice.oms"
@@ -18,7 +18,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 		"fi.ishtech.springboot.jwtauth.repo",
 		"fi.ishtech.practice.oms.repo"
 })
-//@formatter:on
+// @formatter:on
 public class OmsApplication {
 
 	public static void main(String[] args) {
