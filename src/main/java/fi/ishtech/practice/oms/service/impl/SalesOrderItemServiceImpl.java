@@ -2,6 +2,8 @@ package fi.ishtech.practice.oms.service.impl;
 
 import java.math.BigDecimal;
 
+import jakarta.persistence.EntityManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -16,7 +18,7 @@ import fi.ishtech.practice.oms.repo.SalesOrderItemRepo;
 import fi.ishtech.practice.oms.service.ProductService;
 import fi.ishtech.practice.oms.service.SalesOrderItemService;
 import fi.ishtech.practice.oms.service.SalesOrderService;
-import jakarta.persistence.EntityManager;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**

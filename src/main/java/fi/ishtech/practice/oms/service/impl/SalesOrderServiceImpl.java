@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.Set;
 
+import jakarta.persistence.EntityManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,7 @@ import fi.ishtech.practice.oms.repo.SalesOrderRepo;
 import fi.ishtech.practice.oms.service.CustomerDiscountService;
 import fi.ishtech.practice.oms.service.ProductService;
 import fi.ishtech.practice.oms.service.SalesOrderService;
-import jakarta.persistence.EntityManager;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**

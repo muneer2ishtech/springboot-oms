@@ -1,12 +1,8 @@
 package fi.ishtech.practice.oms.entity;
 
+import java.io.Serial;
 import java.math.BigDecimal;
 
-import org.hibernate.annotations.DynamicInsert;
-import org.hibernate.annotations.DynamicUpdate;
-
-import fi.ishtech.base.entity.BaseStandardEntity;
-import fi.ishtech.practice.oms.enums.DiscountTypeEnum;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,6 +13,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
+import fi.ishtech.base.entity.BaseStandardEntity;
+import fi.ishtech.practice.oms.enums.DiscountTypeEnum;
+import fi.ishtech.springboot.jwtauth.entity.UserProfile;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -36,6 +40,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class CustomerDiscount extends BaseStandardEntity {
 
+	@Serial
 	private static final long serialVersionUID = -4957579670535741482L;
 
 	@Column(name = "customer_id", nullable = false, insertable = true, updatable = false)

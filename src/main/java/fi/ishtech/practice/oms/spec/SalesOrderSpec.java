@@ -1,18 +1,20 @@
 package fi.ishtech.practice.oms.spec;
 
+import java.io.Serial;
 import java.util.List;
 
-import fi.ishtech.base.spec.BaseStandardSpec;
-import fi.ishtech.practice.oms.entity.SalesOrder;
-import fi.ishtech.practice.oms.entity.SalesOrder_;
-import fi.ishtech.practice.oms.entity.UserProfile;
-import fi.ishtech.practice.oms.entity.UserProfile_;
-import fi.ishtech.practice.oms.payload.filter.SalesOrderFilterParams;
-import fi.ishtech.practice.oms.payload.filter.UserProfileFilterParams;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+
+import fi.ishtech.base.spec.BaseStandardSpec;
+import fi.ishtech.practice.oms.entity.SalesOrder;
+import fi.ishtech.practice.oms.entity.SalesOrder_;
+import fi.ishtech.practice.oms.payload.filter.SalesOrderFilterParams;
+import fi.ishtech.springboot.jwtauth.entity.UserProfile;
+import fi.ishtech.springboot.jwtauth.entity.UserProfile_;
+import fi.ishtech.springboot.jwtauth.payload.params.UserProfileFilterParams;
 
 /**
  *
@@ -20,6 +22,7 @@ import jakarta.persistence.criteria.Root;
  */
 public class SalesOrderSpec extends BaseStandardSpec<SalesOrder, SalesOrderFilterParams> {
 
+	@Serial
 	private static final long serialVersionUID = -4027068875044076203L;
 
 	public SalesOrderSpec(SalesOrderFilterParams params) {
