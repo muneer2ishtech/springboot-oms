@@ -60,3 +60,9 @@ Related: that method calls `ex.getMessage().contains(...)` without a null check,
 1. In `CustomerDiscountServiceImpl`, verify that the referenced customer, and the product when `productId` is given, exist before the insert, and throw so the API returns `400` with a message naming the offending field.
 2. Change the handler's fallback so it never returns `ex.getMessage()` to the client: log the exception and return a generic message. `springboot-books-app` commit `ec16a98` addressed the same class of defect, by adding the missing handler rather than by changing the fallback; the fallback itself is the leak here.
 3. Add tests asserting `400`, not `500`, for a non-existent `customerId`, and asserting that the response body contains no SQL, table or constraint names.
+
+---
+
+## 2. `PUT /api/v1/users/{userId}` clears fields absent from the request body
+
+See ishtech-springboot-jwtauth [`KNOWN-ISSUES.md`, issue 1](https://github.com/IshTech/ishtech-springboot-jwtauth/blob/dev/KNOWN-ISSUES.md).
