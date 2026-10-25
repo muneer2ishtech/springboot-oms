@@ -7,6 +7,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+import fi.ishtech.base.annotations.mapstruct.BriefMapping;
+import fi.ishtech.base.annotations.mapstruct.SemiDetailMapping;
 import fi.ishtech.base.mapper.BaseStandardMapper;
 import fi.ishtech.practice.oms.entity.CustomerDiscount;
 import fi.ishtech.practice.oms.payload.CustomerDiscountVo;
@@ -23,6 +25,7 @@ public interface CustomerDiscountMapper extends BaseStandardMapper {
 	 * @param entity {@link CustomerDiscount}
 	 * @return {@link CustomerDiscountVo}
 	 */
+	@BriefMapping
 	@BeanMapping(ignoreByDefault = true)
 	@InheritConfiguration(name = "toBaseStandardVo")
 	@Mapping(source = "customerId", target = "customerId")
@@ -32,6 +35,16 @@ public interface CustomerDiscountMapper extends BaseStandardMapper {
 	@Mapping(source = "buyQuantity", target = "buyQuantity")
 	@Mapping(source = "payQuantity", target = "payQuantity")
 	CustomerDiscountVo toBriefVo(CustomerDiscount entity);
+
+	/**
+	 *
+	 * @param entity {@link CustomerDiscount}
+	 * @return {@link CustomerDiscountVo}
+	 */
+	@SemiDetailMapping
+	@BeanMapping(ignoreByDefault = true)
+	@InheritConfiguration(name = "toBriefVo")
+	CustomerDiscountVo toSemiDetailVo(CustomerDiscount entity);
 
 	/**
 	 *

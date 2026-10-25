@@ -2,6 +2,8 @@ package fi.ishtech.practice.oms.controller;
 
 import java.net.URI;
 
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,13 +25,14 @@ import fi.ishtech.practice.oms.payload.ProductVo;
 import fi.ishtech.practice.oms.payload.filter.ProductFilterParams;
 import fi.ishtech.practice.oms.service.ProductService;
 import fi.ishtech.practice.oms.spec.ProductSpec;
+
+import lombok.extern.slf4j.Slf4j;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Controller for Product
@@ -44,10 +47,11 @@ public class ProductController {
 	private ProductService productService;
 
 	/**
-	 * Gets public info of companies found by filter params
+	 * Finds Product(s) by search filters and pagination
 	 *
 	 * @param params   - {@link ProductFilterParams}
 	 * @param pageable - {@link Pageable}
+	 *
 	 * @return {@link ResponseEntity}&lt;{@link Page}&lt;{@link ProductVo}&gt;&gt;
 	 */
 	@GetMapping(path = "/api/v1/products", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -62,8 +66,10 @@ public class ProductController {
 	}
 
 	/**
+	 * Find Product by id
 	 *
 	 * @param productId
+	 *
 	 * @return {@link ResponseEntity}&lt;{@link ProductVo}&gt;
 	 */
 	@GetMapping(path = "/api/v1/products/{productId}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -79,6 +85,7 @@ public class ProductController {
 	 * Creates new Product
 	 *
 	 * @param productVo - ProductVo
+	 *
 	 * @return {@link ResponseEntity}&lt;{@link Long}&gt;
 	 */
 	// @formatter:off
@@ -107,6 +114,7 @@ public class ProductController {
 	 * Creates new Product
 	 *
 	 * @param productVo - ProductVo
+	 *
 	 * @return {@link ResponseEntity}&lt;{@link Long}&gt;
 	 */
 	// @formatter:off
@@ -123,6 +131,13 @@ public class ProductController {
 		return ResponseEntity.ok(result);
 	}
 
+	/**
+	 * Delete Product by id
+	 *
+	 * @param productVo - ProductVo
+	 *
+	 * @return {@link ResponseEntity}&lt;{@link Void}&gt;
+	 */
 	// @formatter:off
 	@Operation(summary = "Delete existing Produt")
 	@ApiResponses(value = {
@@ -138,7 +153,7 @@ public class ProductController {
 	public ResponseEntity<Void> deleteById(@PathVariable Long id) {
 		log.debug("Deleting Product({})", id);
 
-		productService.deleteById(id);
+		productService.deactivateById(id);
 
 		return new ResponseEntity<Void>(HttpStatus.GONE);
 	}
