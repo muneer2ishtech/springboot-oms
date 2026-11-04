@@ -1,5 +1,8 @@
 package fi.ishtech.practice.oms.service.impl;
 
+import jakarta.persistence.EntityManager;
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -12,8 +15,9 @@ import fi.ishtech.practice.oms.mapper.CustomerDiscountMapper;
 import fi.ishtech.practice.oms.payload.CustomerDiscountVo;
 import fi.ishtech.practice.oms.repo.CustomerDiscountRepo;
 import fi.ishtech.practice.oms.service.CustomerDiscountService;
-import jakarta.persistence.EntityManager;
-import jakarta.validation.Valid;
+import fi.ishtech.practice.oms.service.ProductService;
+import fi.ishtech.springboot.jwtauth.service.UserProfileService;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -34,6 +38,12 @@ public class CustomerDiscountServiceImpl implements CustomerDiscountService {
 	@Autowired
 	private CustomerDiscountMapper customerDiscountMapper;
 
+	@Autowired
+	private UserProfileService userProfileService;
+
+	@Autowired
+	private ProductService productService;
+
 	@Override
 	public EntityManager getEntityManager() {
 		return entityManager;
@@ -52,6 +62,12 @@ public class CustomerDiscountServiceImpl implements CustomerDiscountService {
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@Override
 	public CustomerDiscount create(@Valid CustomerDiscountVo customerDiscountVo) {
+		Assert.isTrue(userProfileService.getRepo().existsById(customerDiscountVo.getCustomerId()),
+				() -> "Customer(" + customerDiscountVo.getCustomerId() + ") does not exist");
+		Assert.isTrue(customerDiscountVo.getProductId() == null
+				|| productService.existsById(customerDiscountVo.getProductId()),
+				() -> "Product(" + customerDiscountVo.getProductId() + ") does not exist");
+
 		CustomerDiscount customerDiscount = customerDiscountMapper.toNewEntity(customerDiscountVo);
 
 		customerDiscount = customerDiscountRepo.saveAndFlush(customerDiscount);

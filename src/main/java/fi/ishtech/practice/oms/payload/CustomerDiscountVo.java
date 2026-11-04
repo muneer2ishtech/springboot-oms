@@ -1,10 +1,14 @@
 package fi.ishtech.practice.oms.payload;
 
+import java.io.Serial;
 import java.math.BigDecimal;
+
+import jakarta.validation.constraints.NotNull;
 
 import fi.ishtech.base.vo.BaseStandardEntityVo;
 import fi.ishtech.practice.oms.enums.DiscountTypeEnum;
-import jakarta.validation.constraints.NotNull;
+import fi.ishtech.springboot.jwtauth.dto.UserProfileDto;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -18,6 +22,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class CustomerDiscountVo extends BaseStandardEntityVo {
 
+	@Serial
 	private static final long serialVersionUID = 2888935904071079798L;
 
 	@NotNull
@@ -36,7 +41,7 @@ public class CustomerDiscountVo extends BaseStandardEntityVo {
 
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
-	private UserProfileVo customer;
+	private UserProfileDto customer;
 
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude

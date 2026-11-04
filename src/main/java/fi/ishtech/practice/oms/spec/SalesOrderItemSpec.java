@@ -1,6 +1,12 @@
 package fi.ishtech.practice.oms.spec;
 
+import java.io.Serial;
 import java.util.List;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import fi.ishtech.base.spec.BaseStandardSpec;
 import fi.ishtech.practice.oms.entity.Product;
@@ -12,10 +18,6 @@ import fi.ishtech.practice.oms.entity.SalesOrder_;
 import fi.ishtech.practice.oms.payload.filter.ProductFilterParams;
 import fi.ishtech.practice.oms.payload.filter.SalesOrderFilterParams;
 import fi.ishtech.practice.oms.payload.filter.SalesOrderItemFilterParams;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 
 /**
  *
@@ -23,6 +25,7 @@ import jakarta.persistence.criteria.Root;
  */
 public class SalesOrderItemSpec extends BaseStandardSpec<SalesOrderItem, SalesOrderItemFilterParams> {
 
+	@Serial
 	private static final long serialVersionUID = -1373909197677613927L;
 
 	public SalesOrderItemSpec(SalesOrderItemFilterParams params) {

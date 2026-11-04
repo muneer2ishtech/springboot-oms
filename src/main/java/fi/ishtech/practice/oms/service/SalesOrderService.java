@@ -1,9 +1,7 @@
 package fi.ishtech.practice.oms.service;
 
 import fi.ishtech.base.service.BaseStandardService;
-import fi.ishtech.practice.oms.entity.CustomerDiscount;
 import fi.ishtech.practice.oms.entity.SalesOrder;
-import fi.ishtech.practice.oms.entity.SalesOrderItem;
 import fi.ishtech.practice.oms.payload.SalesOrderVo;
 
 /**
@@ -21,14 +19,16 @@ public interface SalesOrderService extends BaseStandardService<SalesOrder, Sales
 	SalesOrder create(SalesOrderVo salesOrderVo);
 
 	/**
-	 * Calculates amounts from child {@link SalesOrderItem}s and discounts based on {@link CustomerDiscount} and save.
+	 * Calculates amounts from child {@link fi.ishtech.practice.oms.entity.SalesOrderItem}s and discounts based on
+	 * {@link fi.ishtech.practice.oms.entity.CustomerDiscount} and save.
 	 *
 	 * @param salesOrder - {@link SalesOrder}
 	 */
 	void updateSalesOrderAmountsAndSave(SalesOrder salesOrder);
 
 	/**
-	 * Calculates amounts from child {@link SalesOrderItem}s and discounts based on {@link CustomerDiscount} and save.
+	 * Calculates amounts from child {@link fi.ishtech.practice.oms.entity.SalesOrderItem}s and discounts based on
+	 * {@link fi.ishtech.practice.oms.entity.CustomerDiscount} and save.
 	 *
 	 * @param salesOrderId
 	 */

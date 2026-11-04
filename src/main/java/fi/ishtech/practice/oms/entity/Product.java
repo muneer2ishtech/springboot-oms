@@ -1,15 +1,18 @@
 package fi.ishtech.practice.oms.entity;
 
+import java.io.Serial;
 import java.math.BigDecimal;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import fi.ishtech.base.entity.BaseStandardEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -28,6 +31,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class Product extends BaseStandardEntity {
 
+	@Serial
 	private static final long serialVersionUID = 5200300290570821077L;
 
 	@Column(nullable = false, insertable = true, updatable = false, unique = true)

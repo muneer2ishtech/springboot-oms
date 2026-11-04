@@ -1,14 +1,16 @@
 package fi.ishtech.practice.oms.spec;
 
+import java.io.Serial;
 import java.util.List;
+
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 
 import fi.ishtech.base.spec.BaseStandardSpec;
 import fi.ishtech.practice.oms.entity.Product;
 import fi.ishtech.practice.oms.entity.Product_;
 import fi.ishtech.practice.oms.payload.filter.ProductFilterParams;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
 
 /**
  *
@@ -16,6 +18,7 @@ import jakarta.persistence.criteria.Root;
  */
 public class ProductSpec extends BaseStandardSpec<Product, ProductFilterParams> {
 
+	@Serial
 	private static final long serialVersionUID = -5813949413189524814L;
 
 	public ProductSpec(ProductFilterParams params) {

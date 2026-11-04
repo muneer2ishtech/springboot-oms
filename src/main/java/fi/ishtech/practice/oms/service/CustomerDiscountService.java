@@ -1,10 +1,11 @@
 package fi.ishtech.practice.oms.service;
 
+import jakarta.validation.Valid;
+
 import fi.ishtech.base.service.BaseStandardService;
 import fi.ishtech.practice.oms.entity.CustomerDiscount;
 import fi.ishtech.practice.oms.enums.DiscountTypeEnum;
 import fi.ishtech.practice.oms.payload.CustomerDiscountVo;
-import jakarta.validation.Valid;
 
 /**
  *
