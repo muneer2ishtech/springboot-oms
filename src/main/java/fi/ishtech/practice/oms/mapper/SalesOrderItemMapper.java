@@ -10,6 +10,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 import fi.ishtech.base.annotations.mapstruct.BriefMapping;
+import fi.ishtech.base.annotations.mapstruct.DetailMapping;
 import fi.ishtech.base.annotations.mapstruct.SemiDetailMapping;
 import fi.ishtech.base.mapper.BaseStandardMapper;
 import fi.ishtech.practice.oms.entity.SalesOrderItem;
@@ -50,6 +51,16 @@ public interface SalesOrderItemMapper extends BaseStandardMapper {
 	@InheritConfiguration(name = "toBriefVo")
 	@Mapping(source = "product", target = "product", qualifiedBy = BriefMapping.class)
 	SalesOrderItemVo toSemiDetailVo(SalesOrderItem entity);
+
+	/**
+	 *
+	 * @param entity {@link SalesOrderItem}
+	 * @return {@link SalesOrderItemVo}
+	 */
+	@DetailMapping
+	@BeanMapping(ignoreByDefault = true)
+	@InheritConfiguration(name = "toSemiDetailVo")
+	SalesOrderItemVo toDetailVo(SalesOrderItem entity);
 
 	/**
 	 *

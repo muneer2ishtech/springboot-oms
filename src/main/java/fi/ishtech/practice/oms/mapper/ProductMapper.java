@@ -8,6 +8,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 import fi.ishtech.base.annotations.mapstruct.BriefMapping;
+import fi.ishtech.base.annotations.mapstruct.DetailMapping;
 import fi.ishtech.base.annotations.mapstruct.SemiDetailMapping;
 import fi.ishtech.base.mapper.BaseStandardMapper;
 import fi.ishtech.practice.oms.entity.Product;
@@ -42,6 +43,16 @@ public interface ProductMapper extends BaseStandardMapper {
 	@BeanMapping(ignoreByDefault = true)
 	@InheritConfiguration(name = "toBriefVo")
 	ProductVo toSemiDetailVo(Product entity);
+
+	/**
+	 *
+	 * @param entity {@link Product}
+	 * @return {@link ProductVo}
+	 */
+	@DetailMapping
+	@BeanMapping(ignoreByDefault = true)
+	@InheritConfiguration(name = "toSemiDetailVo")
+	ProductVo toDetailVo(Product entity);
 
 	/**
 	 *
