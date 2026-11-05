@@ -19,7 +19,7 @@ import fi.ishtech.practice.oms.payload.SalesOrderItemVo;
  *
  * @author Muneer Ahmed Syed
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = ProductMapper.class)
 public interface SalesOrderItemMapper extends BaseStandardMapper {
 
 	/**
@@ -48,6 +48,7 @@ public interface SalesOrderItemMapper extends BaseStandardMapper {
 	@SemiDetailMapping
 	@BeanMapping(ignoreByDefault = true)
 	@InheritConfiguration(name = "toBriefVo")
+	@Mapping(source = "product", target = "product", qualifiedBy = BriefMapping.class)
 	SalesOrderItemVo toSemiDetailVo(SalesOrderItem entity);
 
 	/**
