@@ -96,7 +96,7 @@ public class SalesOrderServiceImpl implements SalesOrderService {
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@Override
 	public SalesOrder create(final SalesOrderVo salesOrderVo) {
-		Assert.isTrue(salesOrderVo.getCustomerId() != null, "salesOrderId cannot be null");
+		Assert.isTrue(salesOrderVo.getCustomerId() != null, "customerId cannot be null");
 
 		SalesOrder salesOrder = salesOrderMapper.toNewEntity(salesOrderVo);
 
@@ -320,12 +320,12 @@ public class SalesOrderServiceImpl implements SalesOrderService {
 	 *
 	 * @param quantity - SalesOrderItem quantity
 	 * @param buyX     - CustomerDiscount buyQuantity
-	 * @param payY     - CustomerDiscount sellQuantity
+	 * @param payY     - CustomerDiscount payQuantity
 	 *
 	 * @return int - discountedQuantity - how many items they will get free
 	 */
 	private int calcDiscountQuantityForBuyXPayY(final int quantity, final int buyX, final int payY) {
-		log.trace("uantity={}, buyX={}, payY={}", quantity, buyX, payY);
+		log.trace("quantity={}, buyX={}, payY={}", quantity, buyX, payY);
 
 		int freeUnitsPerSet = buyX - payY;
 		int fullSets = quantity / buyX;
