@@ -80,7 +80,7 @@ public class SalesOrderController {
 	}
 
 	/**
-	 * Find SaleOrder by id
+	 * Find SalesOrder by id
 	 *
 	 * @param salesOrderId
 	 *
@@ -146,8 +146,8 @@ public class SalesOrderController {
 		Assert.isNull(salesOrderItemVo.getId(), "id should be null");
 		Assert.notNull(salesOrderItemVo.getSalesOrderId(), "salesOrderId cannot be null");
 
-		var salesOderId = salesOrderItemVo.getSalesOrderId();
-		var salesOrder = salesOrderService.findOneByIdOrElseThrow(salesOderId);
+		var salesOrderId = salesOrderItemVo.getSalesOrderId();
+		var salesOrder = salesOrderService.findOneByIdOrElseThrow(salesOrderId);
 		// TODO: this throws 404, it is better to throw 400
 
 		if (authInfoService.isAdmin()) {
@@ -168,7 +168,7 @@ public class SalesOrderController {
 		URI uri = ServletUriComponentsBuilder
 					.fromCurrentContextPath()
 					.path("/api/v1/sales-orders/{salesOrderId}")
-					.buildAndExpand(salesOderId)
+					.buildAndExpand(salesOrderId)
 					.toUri();
 		// @formatter:on
 
@@ -214,7 +214,7 @@ public class SalesOrderController {
 	@PatchMapping(path = "/api/v1/sales-orders/sales-order-items/{salesOrderItemId}")
 	public ResponseEntity<Void> updateSalesOrderItemQuantityById(@PathVariable Long salesOrderItemId,
 			@RequestParam Integer quantity) {
-		log.debug("Updating SalesOrderitem({}) quantity to {}", salesOrderItemId, quantity);
+		log.debug("Updating SalesOrderItem({}) quantity to {}", salesOrderItemId, quantity);
 
 		salesOrderItemService.updateQuantityById(salesOrderItemId, quantity);
 
