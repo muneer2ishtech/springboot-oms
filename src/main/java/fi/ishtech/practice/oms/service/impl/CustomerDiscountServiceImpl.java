@@ -64,6 +64,11 @@ public class CustomerDiscountServiceImpl implements CustomerDiscountService {
 	}
 
 	@Override
+	public CustomerDiscountVo findOneByIdAndMapToVoOrElseThrow(Long id) {
+		return customerDiscountMapper.toSemiDetailVo(findOneByIdOrElseThrow(id));
+	}
+
+	@Override
 	public Page<CustomerDiscountVo> findAllAndMapToVo(BaseStandardSpec<CustomerDiscount, ? extends BaseStandardEntityFilterParams> spec,
 			Pageable pageable) {
 		return findAll(spec, pageable).map(customerDiscountMapper::toBriefVo);

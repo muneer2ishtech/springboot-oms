@@ -83,6 +83,11 @@ public class SalesOrderServiceImpl implements SalesOrderService {
 	}
 
 	@Override
+	public SalesOrderVo findOneByIdAndMapToVoOrElseThrow(Long id) {
+		return salesOrderMapper.toSemiDetailVo(findOneByIdOrElseThrow(id));
+	}
+
+	@Override
 	public Page<SalesOrderVo> findAllAndMapToVo(BaseStandardSpec<SalesOrder, ? extends BaseStandardEntityFilterParams> spec,
 			Pageable pageable) {
 		return findAll(spec, pageable).map(salesOrderMapper::toBriefVo);
