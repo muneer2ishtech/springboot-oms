@@ -19,7 +19,7 @@ public interface CustomerDiscountService extends BaseStandardService<CustomerDis
 	 * @param productVo - {@link CustomerDiscountVo}
 	 * @return {@link CustomerDiscount}
 	 */
-	CustomerDiscount create(CustomerDiscountVo productVo);
+	CustomerDiscount create(@Valid CustomerDiscountVo productVo);
 
 	CustomerDiscountVo updateAndMapToVo(@Valid CustomerDiscountVo productVo);
 
