@@ -4,11 +4,15 @@ import jakarta.persistence.EntityManager;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
+import fi.ishtech.base.payload.filter.BaseStandardEntityFilterParams;
+import fi.ishtech.base.spec.BaseStandardSpec;
 import fi.ishtech.practice.oms.entity.CustomerDiscount;
 import fi.ishtech.practice.oms.enums.DiscountTypeEnum;
 import fi.ishtech.practice.oms.mapper.CustomerDiscountMapper;
@@ -57,6 +61,12 @@ public class CustomerDiscountServiceImpl implements CustomerDiscountService {
 	@Override
 	public CustomerDiscountMapper getMapper() {
 		return customerDiscountMapper;
+	}
+
+	@Override
+	public Page<CustomerDiscountVo> findAllAndMapToVo(BaseStandardSpec<CustomerDiscount, ? extends BaseStandardEntityFilterParams> spec,
+			Pageable pageable) {
+		return findAll(spec, pageable).map(customerDiscountMapper::toBriefVo);
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
