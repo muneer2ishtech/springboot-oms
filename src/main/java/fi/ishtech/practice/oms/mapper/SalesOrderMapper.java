@@ -12,12 +12,13 @@ import fi.ishtech.base.annotations.mapstruct.SemiDetailMapping;
 import fi.ishtech.base.mapper.BaseStandardMapper;
 import fi.ishtech.practice.oms.entity.SalesOrder;
 import fi.ishtech.practice.oms.payload.SalesOrderVo;
+import fi.ishtech.springboot.jwtauth.mapper.UserProfileMapper;
 
 /**
  *
  * @author Muneer Ahmed Syed
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = UserProfileMapper.class)
 public interface SalesOrderMapper extends BaseStandardMapper {
 
 	/**
@@ -43,6 +44,7 @@ public interface SalesOrderMapper extends BaseStandardMapper {
 	@SemiDetailMapping
 	@BeanMapping(ignoreByDefault = true)
 	@InheritConfiguration(name = "toBriefVo")
+	@Mapping(source = "customer", target = "customer", qualifiedBy = BriefMapping.class)
 	SalesOrderVo toSemiDetailVo(SalesOrder entity);
 
 	/**
