@@ -9,6 +9,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+import fi.ishtech.base.annotations.mapstruct.BriefMapping;
+import fi.ishtech.base.annotations.mapstruct.SemiDetailMapping;
 import fi.ishtech.base.mapper.BaseStandardMapper;
 import fi.ishtech.practice.oms.entity.SalesOrderItem;
 import fi.ishtech.practice.oms.payload.SalesOrderItemVo;
@@ -25,6 +27,7 @@ public interface SalesOrderItemMapper extends BaseStandardMapper {
 	 * @param entity {@link SalesOrderItem}
 	 * @return {@link SalesOrderItemVo}
 	 */
+	@BriefMapping
 	@BeanMapping(ignoreByDefault = true)
 	@InheritConfiguration(name = "toBaseStandardVo")
 	@Mapping(source = "salesOrderId", target = "salesOrderId")
@@ -36,6 +39,16 @@ public interface SalesOrderItemMapper extends BaseStandardMapper {
 	@Mapping(source = "discountAmount", target = "discountAmount")
 	@Mapping(source = "lineAmount", target = "lineAmount")
 	SalesOrderItemVo toBriefVo(SalesOrderItem entity);
+
+	/**
+	 *
+	 * @param entity {@link SalesOrderItem}
+	 * @return {@link SalesOrderItemVo}
+	 */
+	@SemiDetailMapping
+	@BeanMapping(ignoreByDefault = true)
+	@InheritConfiguration(name = "toBriefVo")
+	SalesOrderItemVo toSemiDetailVo(SalesOrderItem entity);
 
 	/**
 	 *
