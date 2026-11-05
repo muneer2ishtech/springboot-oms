@@ -7,15 +7,19 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+import fi.ishtech.base.annotations.mapstruct.BriefMapping;
+import fi.ishtech.base.annotations.mapstruct.DetailMapping;
+import fi.ishtech.base.annotations.mapstruct.SemiDetailMapping;
 import fi.ishtech.base.mapper.BaseStandardMapper;
 import fi.ishtech.practice.oms.entity.SalesOrder;
 import fi.ishtech.practice.oms.payload.SalesOrderVo;
+import fi.ishtech.springboot.jwtauth.mapper.UserProfileMapper;
 
 /**
  *
  * @author Muneer Ahmed Syed
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = { UserProfileMapper.class, SalesOrderItemMapper.class })
 public interface SalesOrderMapper extends BaseStandardMapper {
 
 	/**
@@ -23,6 +27,7 @@ public interface SalesOrderMapper extends BaseStandardMapper {
 	 * @param entity {@link SalesOrder}
 	 * @return {@link SalesOrderVo}
 	 */
+	@BriefMapping
 	@BeanMapping(ignoreByDefault = true)
 	@InheritConfiguration(name = "toBaseStandardVo")
 	@Mapping(source = "customerId", target = "customerId")
@@ -31,6 +36,28 @@ public interface SalesOrderMapper extends BaseStandardMapper {
 	@Mapping(source = "discountAmount", target = "discountAmount")
 	@Mapping(source = "netAmount", target = "netAmount")
 	SalesOrderVo toBriefVo(SalesOrder entity);
+
+	/**
+	 *
+	 * @param entity {@link SalesOrder}
+	 * @return {@link SalesOrderVo}
+	 */
+	@SemiDetailMapping
+	@BeanMapping(ignoreByDefault = true)
+	@InheritConfiguration(name = "toBriefVo")
+	@Mapping(source = "customer", target = "customer", qualifiedBy = BriefMapping.class)
+	SalesOrderVo toSemiDetailVo(SalesOrder entity);
+
+	/**
+	 *
+	 * @param entity {@link SalesOrder}
+	 * @return {@link SalesOrderVo}
+	 */
+	@DetailMapping
+	@BeanMapping(ignoreByDefault = true)
+	@InheritConfiguration(name = "toSemiDetailVo")
+	@Mapping(source = "salesOrderItems", target = "salesOrderItems", qualifiedBy = SemiDetailMapping.class)
+	SalesOrderVo toDetailVo(SalesOrder entity);
 
 	/**
 	 *

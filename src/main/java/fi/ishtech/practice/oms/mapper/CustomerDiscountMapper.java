@@ -8,16 +8,18 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 import fi.ishtech.base.annotations.mapstruct.BriefMapping;
+import fi.ishtech.base.annotations.mapstruct.DetailMapping;
 import fi.ishtech.base.annotations.mapstruct.SemiDetailMapping;
 import fi.ishtech.base.mapper.BaseStandardMapper;
 import fi.ishtech.practice.oms.entity.CustomerDiscount;
 import fi.ishtech.practice.oms.payload.CustomerDiscountVo;
+import fi.ishtech.springboot.jwtauth.mapper.UserProfileMapper;
 
 /**
  *
  * @author Muneer Ahmed Syed
  */
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = { ProductMapper.class, UserProfileMapper.class })
 public interface CustomerDiscountMapper extends BaseStandardMapper {
 
 	/**
@@ -45,6 +47,18 @@ public interface CustomerDiscountMapper extends BaseStandardMapper {
 	@BeanMapping(ignoreByDefault = true)
 	@InheritConfiguration(name = "toBriefVo")
 	CustomerDiscountVo toSemiDetailVo(CustomerDiscount entity);
+
+	/**
+	 *
+	 * @param entity {@link CustomerDiscount}
+	 * @return {@link CustomerDiscountVo}
+	 */
+	@DetailMapping
+	@BeanMapping(ignoreByDefault = true)
+	@InheritConfiguration(name = "toSemiDetailVo")
+	@Mapping(source = "customer", target = "customer", qualifiedBy = BriefMapping.class)
+	@Mapping(source = "product", target = "product", qualifiedBy = BriefMapping.class)
+	CustomerDiscountVo toDetailVo(CustomerDiscount entity);
 
 	/**
 	 *

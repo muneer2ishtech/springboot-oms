@@ -8,12 +8,16 @@ import jakarta.persistence.EntityManager;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+import fi.ishtech.base.payload.filter.BaseStandardEntityFilterParams;
+import fi.ishtech.base.spec.BaseStandardSpec;
 import fi.ishtech.practice.oms.consts.OmsConstants;
 import fi.ishtech.practice.oms.entity.CustomerDiscount;
 import fi.ishtech.practice.oms.entity.SalesOrder;
@@ -76,6 +80,17 @@ public class SalesOrderServiceImpl implements SalesOrderService {
 	@Override
 	public SalesOrderMapper getMapper() {
 		return salesOrderMapper;
+	}
+
+	@Override
+	public SalesOrderVo findOneByIdAndMapToVoOrElseThrow(Long id) {
+		return salesOrderMapper.toDetailVo(findOneByIdOrElseThrow(id));
+	}
+
+	@Override
+	public Page<SalesOrderVo> findAllAndMapToVo(BaseStandardSpec<SalesOrder, ? extends BaseStandardEntityFilterParams> spec,
+			Pageable pageable) {
+		return findAll(spec, pageable).map(salesOrderMapper::toSemiDetailVo);
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
