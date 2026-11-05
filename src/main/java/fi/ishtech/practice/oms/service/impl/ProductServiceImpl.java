@@ -56,13 +56,13 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public ProductVo findOneByIdAndMapToVoOrElseThrow(Long id) {
-		return productMapper.toSemiDetailVo(findOneByIdOrElseThrow(id));
+		return productMapper.toDetailVo(findOneByIdOrElseThrow(id));
 	}
 
 	@Override
 	public Page<ProductVo> findAllAndMapToVo(BaseStandardSpec<Product, ? extends BaseStandardEntityFilterParams> spec,
 			Pageable pageable) {
-		return findAll(spec, pageable).map(productMapper::toBriefVo);
+		return findAll(spec, pageable).map(productMapper::toSemiDetailVo);
 	}
 
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
