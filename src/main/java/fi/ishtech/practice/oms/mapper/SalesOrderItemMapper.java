@@ -30,6 +30,7 @@ public abstract class SalesOrderItemMapper implements BaseStandardMapper {
 	/**
 	 * {@link Lazy} breaks the bean cycle with {@link SalesOrderMapper}, which uses this mapper for sales order items
 	 */
+	@SuppressWarnings("java:S6813")
 	@Lazy
 	@Autowired
 	protected SalesOrderMapper salesOrderMapper;
