@@ -279,6 +279,7 @@ curl --location --request PATCH 'http://localhost:8080/api/v1/sales-orders/sales
 ## Delete item
 
 - The id in the URL is the id of the Sales Order Item. Deletes the item, recalculates the amounts and discounts of the Sales Order, and returns `410 - Gone`.
+- A `USER` can delete items only of the user's own Sales Orders, and gets `403 - Forbidden` for others. An `ADMIN` can delete items of any Sales Order.
 
 ```sh
 curl --location --request DELETE 'http://localhost:8080/api/v1/sales-orders/sales-order-items/3' \
