@@ -16,8 +16,8 @@
 
 # Preconditions
 
-- An `ADMIN` token is needed for the calls below that create or update a Product or a Customer Discount:
-    - `POST /api/v1/products`, `PUT /api/v1/products`
+- An `ADMIN` token is needed for the calls below that create, update or delete a Product, or create or update a Customer Discount:
+    - `POST /api/v1/products`, `PUT /api/v1/products`, `DELETE /api/v1/products/{id}`
     - `POST /api/v1/customer-discounts`, `PUT /api/v1/customer-discounts`
 - Signup grants only the `USER` role, so these calls return `403 - Forbidden` with a signup token. Change the role of the user to `ADMIN` first:
     - See [ishtech-springboot-jwtauth-web/DB-SETUP.md / Change role to admin for an user](https://github.com/IshTech/ishtech-springboot-jwtauth/blob/main/ishtech-springboot-jwtauth-web/DB-SETUP.md#change-role-to-admin-for-an-user)
