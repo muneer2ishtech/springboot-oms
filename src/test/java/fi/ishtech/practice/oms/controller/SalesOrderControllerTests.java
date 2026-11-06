@@ -7,7 +7,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +24,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import fi.ishtech.practice.oms.entity.SalesOrder;
 import fi.ishtech.practice.oms.entity.SalesOrderItem;
+import fi.ishtech.practice.oms.payload.SalesOrderVo;
 import fi.ishtech.practice.oms.service.SalesOrderItemService;
 import fi.ishtech.practice.oms.service.SalesOrderService;
 import fi.ishtech.springboot.jwtauth.service.AuthInfoService;
@@ -133,6 +136,19 @@ class SalesOrderControllerTests {
 				.andExpect(status().isOk());
 
 		verify(salesOrderItemService).updateQuantityById(SALES_ORDER_ITEM_ID, 5);
+	}
+
+	@Test
+	@WithMockUser(authorities = "ROLE_ADMIN")
+	void fetchSalesOrderOfOtherCustomerByAdminReturns200() throws Exception {
+		var salesOrderVo = new SalesOrderVo();
+		salesOrderVo.setId(SALES_ORDER_ID);
+		salesOrderVo.setCustomerId(OWNER_ID);
+		when(salesOrderService.findOneByIdAndMapToVoOrElseThrow(SALES_ORDER_ID)).thenReturn(salesOrderVo);
+
+		mockMvc.perform(get("/api/v1/sales-orders/" + SALES_ORDER_ID))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.customerId").value(OWNER_ID));
 	}
 
 }

@@ -230,6 +230,7 @@ curl --location 'http://localhost:8080/api/v1/sales-orders' \
 ## Get by id
 
 - Returns the Sales Order with its customer and its items.
+- A `USER` can get only the user's own Sales Orders, and gets `403 - Forbidden` for others. An `ADMIN` can get any Sales Order.
 
 ```sh
 curl --location 'http://localhost:8080/api/v1/sales-orders/1' \

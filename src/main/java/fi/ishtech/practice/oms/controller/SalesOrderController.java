@@ -88,7 +88,10 @@ public class SalesOrderController {
 	 * @return {@link ResponseEntity}&lt;{@link SalesOrderVo}&gt;
 	 */
 	@GetMapping(path = "/api/v1/sales-orders/{salesOrderId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PostAuthorize("returnObject.body == null || returnObject.body.customerId == authentication.principal.id")
+	// @formatter:off
+	@PostAuthorize("hasAnyAuthority('ROLE_ADMIN')"
+			+ " || returnObject.body == null || returnObject.body.customerId == authentication.principal.id")
+	// @formatter:on
 	public ResponseEntity<SalesOrderVo> fetchSalesOrder(@PathVariable("salesOrderId") Long salesOrderId) {
 		log.info("salesOrderId:{}", salesOrderId);
 
