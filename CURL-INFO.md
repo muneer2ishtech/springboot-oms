@@ -87,7 +87,7 @@ curl --location 'http://localhost:8080/api/v1/products?minUnitPrice=60&page=0&si
 
 - `id` in the request body is the id of the Product to update.
 - `name` can't be changed: a different `name` in the request body is ignored.
-- Send every field, including `"isActive": true`. A field left out of the request body is saved as empty, and a missing `isActive` deactivates the Product.
+- Send every field: a field left out of the request body is saved as empty. `isActive` is the exception: leaving it out keeps the stored value.
 
 ```sh
 curl --location --request PUT 'http://localhost:8080/api/v1/products' \
@@ -180,7 +180,7 @@ curl --location 'http://localhost:8080/api/v1/customer-discounts?customerId=2&di
 ## Update
 
 - `id` in the request body is the id of the Customer Discount to update.
-- Send every field, including `"isActive": true`. A field left out of the request body is saved as empty, and a missing `isActive` deactivates the Customer Discount.
+- Send every field: a field left out of the request body is saved as empty. `isActive` is the exception: leaving it out keeps the stored value.
 
 ```sh
 curl --location --request PUT 'http://localhost:8080/api/v1/customer-discounts' \
