@@ -32,6 +32,7 @@ public interface SalesOrderMapper extends BaseStandardMapper {
 	@InheritConfiguration(name = "toBaseStandardVo")
 	@Mapping(source = "customerId", target = "customerId")
 	@Mapping(source = "origTotalAmount", target = "origTotalAmount")
+	@Mapping(source = "totalAmount", target = "totalAmount")
 	@Mapping(source = "discountPercent", target = "discountPercent")
 	@Mapping(source = "discountAmount", target = "discountAmount")
 	@Mapping(source = "netAmount", target = "netAmount")
