@@ -1,11 +1,13 @@
 package fi.ishtech.practice.oms.controller;
 
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -97,6 +99,40 @@ class SalesOrderControllerTests {
 				.andExpect(status().isGone());
 
 		verify(salesOrderItemService).deleteById(SALES_ORDER_ITEM_ID);
+	}
+
+	@Test
+	@WithMockUser(authorities = "ROLE_USER")
+	void updateSalesOrderItemQuantityOfOtherCustomerReturns403() throws Exception {
+		when(authInfoService.getUserId()).thenReturn(OTHER_USER_ID);
+
+		mockMvc.perform(patch("/api/v1/sales-orders/sales-order-items/" + SALES_ORDER_ITEM_ID).param("quantity", "5"))
+				.andExpect(status().isForbidden());
+
+		verify(salesOrderItemService, never()).updateQuantityById(anyLong(), anyInt());
+	}
+
+	@Test
+	@WithMockUser(authorities = "ROLE_USER")
+	void updateSalesOrderItemQuantityOfOwnSalesOrderReturns200() throws Exception {
+		when(authInfoService.getUserId()).thenReturn(OWNER_ID);
+
+		mockMvc.perform(patch("/api/v1/sales-orders/sales-order-items/" + SALES_ORDER_ITEM_ID).param("quantity", "5"))
+				.andExpect(status().isOk());
+
+		verify(salesOrderItemService).updateQuantityById(SALES_ORDER_ITEM_ID, 5);
+	}
+
+	@Test
+	@WithMockUser(authorities = "ROLE_ADMIN")
+	void updateSalesOrderItemQuantityByAdminReturns200() throws Exception {
+		when(authInfoService.isAdmin()).thenReturn(true);
+		when(authInfoService.getUserId()).thenReturn(OTHER_USER_ID);
+
+		mockMvc.perform(patch("/api/v1/sales-orders/sales-order-items/" + SALES_ORDER_ITEM_ID).param("quantity", "5"))
+				.andExpect(status().isOk());
+
+		verify(salesOrderItemService).updateQuantityById(SALES_ORDER_ITEM_ID, 5);
 	}
 
 }

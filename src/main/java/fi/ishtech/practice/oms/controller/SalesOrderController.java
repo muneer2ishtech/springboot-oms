@@ -219,6 +219,8 @@ public class SalesOrderController {
 			@RequestParam Integer quantity) {
 		log.debug("Updating SalesOrderItem({}) quantity to {}", salesOrderItemId, quantity);
 
+		checkAdminOrOwnerOfSalesOrderItem(salesOrderItemId);
+
 		salesOrderItemService.updateQuantityById(salesOrderItemId, quantity);
 
 		return ResponseEntity.ok().build();

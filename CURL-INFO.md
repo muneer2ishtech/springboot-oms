@@ -269,6 +269,7 @@ curl --location 'http://localhost:8080/api/v1/sales-orders/sales-order-items' \
 
 - The id in the URL is the id of the Sales Order Item, and `quantity` is its new quantity.
 - Recalculates the amounts and discounts of the Sales Order.
+- A `USER` can change items only of the user's own Sales Orders, and gets `403 - Forbidden` for others. An `ADMIN` can change items of any Sales Order.
 
 ```sh
 curl --location --request PATCH 'http://localhost:8080/api/v1/sales-orders/sales-order-items/1?quantity=5' \
