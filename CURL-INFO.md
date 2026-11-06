@@ -16,8 +16,8 @@
 
 # Preconditions
 
-- An `ADMIN` token is needed for the calls below that create or update a Product or a Customer Discount:
-    - `POST /api/v1/products`, `PUT /api/v1/products`
+- An `ADMIN` token is needed for the calls below that create, update or delete a Product, or create or update a Customer Discount:
+    - `POST /api/v1/products`, `PUT /api/v1/products`, `DELETE /api/v1/products/{id}`
     - `POST /api/v1/customer-discounts`, `PUT /api/v1/customer-discounts`
 - Signup grants only the `USER` role, so these calls return `403 - Forbidden` with a signup token. Change the role of the user to `ADMIN` first:
     - See [ishtech-springboot-jwtauth-web/DB-SETUP.md / Change role to admin for an user](https://github.com/IshTech/ishtech-springboot-jwtauth/blob/main/ishtech-springboot-jwtauth-web/DB-SETUP.md#change-role-to-admin-for-an-user)
@@ -230,6 +230,7 @@ curl --location 'http://localhost:8080/api/v1/sales-orders' \
 ## Get by id
 
 - Returns the Sales Order with its customer and its items.
+- A `USER` can get only the user's own Sales Orders, and gets `403 - Forbidden` for others. An `ADMIN` can get any Sales Order.
 
 ```sh
 curl --location 'http://localhost:8080/api/v1/sales-orders/1' \
@@ -269,6 +270,7 @@ curl --location 'http://localhost:8080/api/v1/sales-orders/sales-order-items' \
 
 - The id in the URL is the id of the Sales Order Item, and `quantity` is its new quantity.
 - Recalculates the amounts and discounts of the Sales Order.
+- A `USER` can change items only of the user's own Sales Orders, and gets `403 - Forbidden` for others. An `ADMIN` can change items of any Sales Order.
 
 ```sh
 curl --location --request PATCH 'http://localhost:8080/api/v1/sales-orders/sales-order-items/1?quantity=5' \
@@ -279,6 +281,7 @@ curl --location --request PATCH 'http://localhost:8080/api/v1/sales-orders/sales
 ## Delete item
 
 - The id in the URL is the id of the Sales Order Item. Deletes the item, recalculates the amounts and discounts of the Sales Order, and returns `410 - Gone`.
+- A `USER` can delete items only of the user's own Sales Orders, and gets `403 - Forbidden` for others. An `ADMIN` can delete items of any Sales Order.
 
 ```sh
 curl --location --request DELETE 'http://localhost:8080/api/v1/sales-orders/sales-order-items/3' \
