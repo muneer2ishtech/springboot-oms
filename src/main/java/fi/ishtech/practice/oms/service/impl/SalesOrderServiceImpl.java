@@ -265,7 +265,7 @@ public class SalesOrderServiceImpl implements SalesOrderService {
 
 				if (customerDiscountForProductBuyXPayY != null) {
 					Assert.isTrue(customerDiscountForProductBuyXPayY.getBuyQuantity() != null
-							&& customerDiscountForProductBuyXPayY.getBuyQuantity() != null
+							&& customerDiscountForProductBuyXPayY.getPayQuantity() != null
 							&& customerDiscountForProductBuyXPayY.getBuyQuantity()
 									.intValue() >= customerDiscountForProductBuyXPayY.getPayQuantity().intValue(),
 							"Invalid Customer Discount");
