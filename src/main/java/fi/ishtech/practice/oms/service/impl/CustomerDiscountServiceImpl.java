@@ -12,8 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 
-import fi.ishtech.base.payload.filter.BaseStandardEntityFilterParams;
-import fi.ishtech.base.spec.BaseStandardSpec;
+import fi.ishtech.springboot.base.payload.filter.BaseStandardEntityFilterParams;
+import fi.ishtech.springboot.base.spec.BaseStandardSpec;
 import fi.ishtech.practice.oms.entity.CustomerDiscount;
 import fi.ishtech.practice.oms.enums.DiscountTypeEnum;
 import fi.ishtech.practice.oms.mapper.CustomerDiscountMapper;

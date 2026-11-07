@@ -17,7 +17,7 @@ import jakarta.persistence.UniqueConstraint;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import fi.ishtech.base.entity.BaseStandardEntity;
+import fi.ishtech.springboot.base.entity.BaseStandardEntity;
 import fi.ishtech.practice.oms.enums.DiscountTypeEnum;
 import fi.ishtech.springboot.jwtauth.entity.UserProfile;
 

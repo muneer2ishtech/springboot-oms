@@ -1,6 +1,6 @@
 package fi.ishtech.practice.oms.service;
 
-import fi.ishtech.base.service.BaseStandardService;
+import fi.ishtech.springboot.base.service.BaseStandardService;
 import fi.ishtech.practice.oms.entity.SalesOrderItem;
 import fi.ishtech.practice.oms.payload.SalesOrderItemVo;
 
