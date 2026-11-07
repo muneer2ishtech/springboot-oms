@@ -11,10 +11,10 @@ import org.mapstruct.MappingTarget;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 
-import fi.ishtech.base.annotations.mapstruct.BriefMapping;
-import fi.ishtech.base.annotations.mapstruct.DetailMapping;
-import fi.ishtech.base.annotations.mapstruct.SemiDetailMapping;
-import fi.ishtech.base.mapper.BaseStandardMapper;
+import fi.ishtech.springboot.base.annotations.mapstruct.BriefMapping;
+import fi.ishtech.springboot.base.annotations.mapstruct.DetailMapping;
+import fi.ishtech.springboot.base.annotations.mapstruct.SemiDetailMapping;
+import fi.ishtech.springboot.base.mapper.BaseStandardMapper;
 import fi.ishtech.practice.oms.entity.SalesOrder;
 import fi.ishtech.practice.oms.entity.SalesOrderItem;
 import fi.ishtech.practice.oms.payload.SalesOrderItemVo;

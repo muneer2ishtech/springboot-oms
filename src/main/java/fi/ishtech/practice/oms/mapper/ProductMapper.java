@@ -7,10 +7,10 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-import fi.ishtech.base.annotations.mapstruct.BriefMapping;
-import fi.ishtech.base.annotations.mapstruct.DetailMapping;
-import fi.ishtech.base.annotations.mapstruct.SemiDetailMapping;
-import fi.ishtech.base.mapper.BaseStandardMapper;
+import fi.ishtech.springboot.base.annotations.mapstruct.BriefMapping;
+import fi.ishtech.springboot.base.annotations.mapstruct.DetailMapping;
+import fi.ishtech.springboot.base.annotations.mapstruct.SemiDetailMapping;
+import fi.ishtech.springboot.base.mapper.BaseStandardMapper;
 import fi.ishtech.practice.oms.entity.Product;
 import fi.ishtech.practice.oms.payload.ProductVo;
 

@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 
 import jakarta.validation.constraints.NotNull;
 
-import fi.ishtech.base.vo.BaseStandardEntityVo;
+import fi.ishtech.springboot.base.vo.BaseStandardEntityVo;
 import fi.ishtech.practice.oms.enums.DiscountTypeEnum;
 import fi.ishtech.springboot.jwtauth.dto.UserProfileDto;
 

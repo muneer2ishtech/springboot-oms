@@ -3,7 +3,7 @@ package fi.ishtech.practice.oms.payload.filter;
 import java.io.Serial;
 import java.math.BigDecimal;
 
-import fi.ishtech.base.payload.filter.BaseStandardEntityFilterParams;
+import fi.ishtech.springboot.base.payload.filter.BaseStandardEntityFilterParams;
 import fi.ishtech.practice.oms.enums.DiscountTypeEnum;
 import fi.ishtech.springboot.jwtauth.payload.params.UserProfileFilterParams;
 

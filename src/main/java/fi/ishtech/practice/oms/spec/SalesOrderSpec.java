@@ -8,7 +8,7 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 
-import fi.ishtech.base.spec.BaseStandardSpec;
+import fi.ishtech.springboot.base.spec.BaseStandardSpec;
 import fi.ishtech.practice.oms.entity.SalesOrder;
 import fi.ishtech.practice.oms.entity.SalesOrder_;
 import fi.ishtech.practice.oms.payload.filter.SalesOrderFilterParams;
