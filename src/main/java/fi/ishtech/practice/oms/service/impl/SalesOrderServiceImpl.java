@@ -221,7 +221,7 @@ public class SalesOrderServiceImpl implements SalesOrderService {
 
 	/**
 	 * Calculates
-	 * 
+	 *
 	 * @param salesOrder
 	 */
 	private void calcItemDiscounts(final SalesOrder salesOrder) {
