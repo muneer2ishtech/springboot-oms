@@ -6,7 +6,7 @@ import java.util.Set;
 
 import jakarta.validation.Valid;
 
-import fi.ishtech.base.vo.BaseStandardEntityVo;
+import fi.ishtech.springboot.base.vo.BaseStandardEntityVo;
 import fi.ishtech.springboot.jwtauth.dto.UserProfileDto;
 
 import lombok.Data;

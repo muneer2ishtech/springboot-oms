@@ -38,11 +38,11 @@ public class CustomExceptionHandler {
 
 	@ExceptionHandler(DataIntegrityViolationException.class)
 	public ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException ex) {
-		log.error("handle DataIntegrityViolationException");
-		if (ex.getMessage().contains("uk_sales_order_item_sales_order_id_product_id")) {
+		log.error("handle DataIntegrityViolationException", ex);
+		if (ex.getMessage() != null && ex.getMessage().contains("uk_sales_order_item_sales_order_id_product_id")) {
 			return new ResponseEntity<>("Cannot add row of existing Product in SalesOrder. Instead edit quantity", HttpStatus.BAD_REQUEST);
 		} else {
-			return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>("Data integrity violation", HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-import fi.ishtech.base.vo.BaseStandardEntityVo;
+import fi.ishtech.springboot.base.vo.BaseStandardEntityVo;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
