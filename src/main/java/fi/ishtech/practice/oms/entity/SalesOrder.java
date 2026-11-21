@@ -16,7 +16,7 @@ import jakarta.persistence.Table;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import fi.ishtech.base.entity.BaseStandardEntity;
+import fi.ishtech.springboot.base.entity.BaseStandardEntity;
 import fi.ishtech.springboot.jwtauth.entity.UserProfile;
 
 import lombok.Data;

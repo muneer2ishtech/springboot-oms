@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 
 import jakarta.validation.constraints.Positive;
 
-import fi.ishtech.base.payload.filter.BaseStandardEntityFilterParams;
+import fi.ishtech.springboot.base.payload.filter.BaseStandardEntityFilterParams;
 import fi.ishtech.springboot.jwtauth.payload.params.UserProfileFilterParams;
 
 import lombok.Data;

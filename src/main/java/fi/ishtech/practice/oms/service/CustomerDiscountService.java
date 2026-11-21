@@ -2,7 +2,7 @@ package fi.ishtech.practice.oms.service;
 
 import jakarta.validation.Valid;
 
-import fi.ishtech.base.service.BaseStandardService;
+import fi.ishtech.springboot.base.service.BaseStandardService;
 import fi.ishtech.practice.oms.entity.CustomerDiscount;
 import fi.ishtech.practice.oms.enums.DiscountTypeEnum;
 import fi.ishtech.practice.oms.payload.CustomerDiscountVo;
@@ -16,12 +16,12 @@ public interface CustomerDiscountService extends BaseStandardService<CustomerDis
 	/**
 	 * Creates a new CustomerDiscount
 	 *
-	 * @param productVo - {@link CustomerDiscountVo}
+	 * @param customerDiscountVo - {@link CustomerDiscountVo}
 	 * @return {@link CustomerDiscount}
 	 */
-	CustomerDiscount create(CustomerDiscountVo productVo);
+	CustomerDiscount create(@Valid CustomerDiscountVo customerDiscountVo);
 
-	CustomerDiscountVo updateAndMapToVo(@Valid CustomerDiscountVo productVo);
+	CustomerDiscountVo updateAndMapToVo(@Valid CustomerDiscountVo customerDiscountVo);
 
 	/**
 	 *

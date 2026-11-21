@@ -150,6 +150,7 @@ public class ProductController {
 	})
 	// @formatter:on
 	@DeleteMapping(path = "/api/v1/products/{id}")
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN')")
 	public ResponseEntity<Void> deleteById(@PathVariable Long id) {
 		log.debug("Deleting Product({})", id);
 

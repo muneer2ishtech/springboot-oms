@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.Assert;
@@ -80,14 +81,17 @@ public class SalesOrderController {
 	}
 
 	/**
-	 * Find SaleOrder by id
+	 * Find SalesOrder by id
 	 *
 	 * @param salesOrderId
 	 *
 	 * @return {@link ResponseEntity}&lt;{@link SalesOrderVo}&gt;
 	 */
 	@GetMapping(path = "/api/v1/sales-orders/{salesOrderId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PostAuthorize("returnObject.body == null || returnObject.body.customerId == authentication.principal.id")
+	// @formatter:off
+	@PostAuthorize("hasAnyAuthority('ROLE_ADMIN')"
+			+ " || returnObject.body == null || returnObject.body.customerId == authentication.principal.id")
+	// @formatter:on
 	public ResponseEntity<SalesOrderVo> fetchSalesOrder(@PathVariable("salesOrderId") Long salesOrderId) {
 		log.info("salesOrderId:{}", salesOrderId);
 
@@ -146,8 +150,8 @@ public class SalesOrderController {
 		Assert.isNull(salesOrderItemVo.getId(), "id should be null");
 		Assert.notNull(salesOrderItemVo.getSalesOrderId(), "salesOrderId cannot be null");
 
-		var salesOderId = salesOrderItemVo.getSalesOrderId();
-		var salesOrder = salesOrderService.findOneByIdOrElseThrow(salesOderId);
+		var salesOrderId = salesOrderItemVo.getSalesOrderId();
+		var salesOrder = salesOrderService.findOneByIdOrElseThrow(salesOrderId);
 		// TODO: this throws 404, it is better to throw 400
 
 		if (authInfoService.isAdmin()) {
@@ -168,7 +172,7 @@ public class SalesOrderController {
 		URI uri = ServletUriComponentsBuilder
 					.fromCurrentContextPath()
 					.path("/api/v1/sales-orders/{salesOrderId}")
-					.buildAndExpand(salesOderId)
+					.buildAndExpand(salesOrderId)
 					.toUri();
 		// @formatter:on
 
@@ -198,6 +202,8 @@ public class SalesOrderController {
 	public ResponseEntity<Void> deleteSalesOrderItemById(@PathVariable Long salesOrderItemId) {
 		log.debug("Deleting SalesOrderItem({})", salesOrderItemId);
 
+		checkAdminOrOwnerOfSalesOrderItem(salesOrderItemId);
+
 		salesOrderItemService.deleteById(salesOrderItemId);
 
 		return new ResponseEntity<Void>(HttpStatus.GONE);
@@ -214,11 +220,34 @@ public class SalesOrderController {
 	@PatchMapping(path = "/api/v1/sales-orders/sales-order-items/{salesOrderItemId}")
 	public ResponseEntity<Void> updateSalesOrderItemQuantityById(@PathVariable Long salesOrderItemId,
 			@RequestParam Integer quantity) {
-		log.debug("Updating SalesOrderitem({}) quantity to {}", salesOrderItemId, quantity);
+		log.debug("Updating SalesOrderItem({}) quantity to {}", salesOrderItemId, quantity);
+
+		checkAdminOrOwnerOfSalesOrderItem(salesOrderItemId);
 
 		salesOrderItemService.updateQuantityById(salesOrderItemId, quantity);
 
 		return ResponseEntity.ok().build();
+	}
+
+	/**
+	 * Throws {@link AccessDeniedException} unless the logged-in user is an admin or the customer of the SalesOrder of
+	 * the SalesOrderItem
+	 *
+	 * @param salesOrderItemId
+	 */
+	private void checkAdminOrOwnerOfSalesOrderItem(Long salesOrderItemId) {
+		if (authInfoService.isAdmin()) {
+			return;
+		}
+
+		var salesOrderItem = salesOrderItemService.findOneByIdOrElseThrow(salesOrderItemId);
+		var salesOrder = salesOrderService.findOneByIdOrElseThrow(salesOrderItem.getSalesOrderId());
+
+		var loggedInUserId = authInfoService.getUserId();
+		if (!salesOrder.getCustomerId().equals(loggedInUserId)) {
+			log.error("User({}) cannot change SalesOrderItem({}) of others", loggedInUserId, salesOrderItemId);
+			throw new AccessDeniedException("Cannot change SalesOrderItem of others");
+		}
 	}
 
 }
