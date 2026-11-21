@@ -7,11 +7,15 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-import fi.ishtech.base.mapper.BaseStandardMapper;
+import fi.ishtech.springboot.base.annotations.mapstruct.BriefMapping;
+import fi.ishtech.springboot.base.annotations.mapstruct.DetailMapping;
+import fi.ishtech.springboot.base.annotations.mapstruct.SemiDetailMapping;
+import fi.ishtech.springboot.base.mapper.BaseStandardMapper;
 import fi.ishtech.practice.oms.entity.Product;
 import fi.ishtech.practice.oms.payload.ProductVo;
 
 /**
+ * Mapper for {@link ProductVo} to {@link Product} entity and vice-versa<br>
  *
  * @author Muneer Ahmed Syed
  */
@@ -23,11 +27,32 @@ public interface ProductMapper extends BaseStandardMapper {
 	 * @param entity {@link Product}
 	 * @return {@link ProductVo}
 	 */
+	@BriefMapping
 	@BeanMapping(ignoreByDefault = true)
 	@InheritConfiguration(name = "toBaseStandardVo")
 	@Mapping(source = "name", target = "name")
 	@Mapping(source = "unitPrice", target = "unitPrice")
 	ProductVo toBriefVo(Product entity);
+
+	/**
+	 *
+	 * @param entity {@link Product}
+	 * @return {@link ProductVo}
+	 */
+	@SemiDetailMapping
+	@BeanMapping(ignoreByDefault = true)
+	@InheritConfiguration(name = "toBriefVo")
+	ProductVo toSemiDetailVo(Product entity);
+
+	/**
+	 *
+	 * @param entity {@link Product}
+	 * @return {@link ProductVo}
+	 */
+	@DetailMapping
+	@BeanMapping(ignoreByDefault = true)
+	@InheritConfiguration(name = "toSemiDetailVo")
+	ProductVo toDetailVo(Product entity);
 
 	/**
 	 *

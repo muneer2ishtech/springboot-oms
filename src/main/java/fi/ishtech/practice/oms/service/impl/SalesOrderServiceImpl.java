@@ -4,14 +4,20 @@ import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.Set;
 
+import jakarta.persistence.EntityManager;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+import fi.ishtech.springboot.base.payload.filter.BaseStandardEntityFilterParams;
+import fi.ishtech.springboot.base.spec.BaseStandardSpec;
 import fi.ishtech.practice.oms.consts.OmsConstants;
 import fi.ishtech.practice.oms.entity.CustomerDiscount;
 import fi.ishtech.practice.oms.entity.SalesOrder;
@@ -25,7 +31,7 @@ import fi.ishtech.practice.oms.repo.SalesOrderRepo;
 import fi.ishtech.practice.oms.service.CustomerDiscountService;
 import fi.ishtech.practice.oms.service.ProductService;
 import fi.ishtech.practice.oms.service.SalesOrderService;
-import jakarta.persistence.EntityManager;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -76,10 +82,21 @@ public class SalesOrderServiceImpl implements SalesOrderService {
 		return salesOrderMapper;
 	}
 
+	@Override
+	public SalesOrderVo findOneByIdAndMapToVoOrElseThrow(Long id) {
+		return salesOrderMapper.toDetailVo(findOneByIdOrElseThrow(id));
+	}
+
+	@Override
+	public Page<SalesOrderVo> findAllAndMapToVo(BaseStandardSpec<SalesOrder, ? extends BaseStandardEntityFilterParams> spec,
+			Pageable pageable) {
+		return findAll(spec, pageable).map(salesOrderMapper::toSemiDetailVo);
+	}
+
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@Override
 	public SalesOrder create(final SalesOrderVo salesOrderVo) {
-		Assert.isTrue(salesOrderVo.getCustomerId() != null, "salesOrderId cannot be null");
+		Assert.isTrue(salesOrderVo.getCustomerId() != null, "customerId cannot be null");
 
 		SalesOrder salesOrder = salesOrderMapper.toNewEntity(salesOrderVo);
 
@@ -204,7 +221,7 @@ public class SalesOrderServiceImpl implements SalesOrderService {
 
 	/**
 	 * Calculates
-	 * 
+	 *
 	 * @param salesOrder
 	 */
 	private void calcItemDiscounts(final SalesOrder salesOrder) {
@@ -248,7 +265,7 @@ public class SalesOrderServiceImpl implements SalesOrderService {
 
 				if (customerDiscountForProductBuyXPayY != null) {
 					Assert.isTrue(customerDiscountForProductBuyXPayY.getBuyQuantity() != null
-							&& customerDiscountForProductBuyXPayY.getBuyQuantity() != null
+							&& customerDiscountForProductBuyXPayY.getPayQuantity() != null
 							&& customerDiscountForProductBuyXPayY.getBuyQuantity()
 									.intValue() >= customerDiscountForProductBuyXPayY.getPayQuantity().intValue(),
 							"Invalid Customer Discount");
@@ -303,12 +320,12 @@ public class SalesOrderServiceImpl implements SalesOrderService {
 	 *
 	 * @param quantity - SalesOrderItem quantity
 	 * @param buyX     - CustomerDiscount buyQuantity
-	 * @param payY     - CustomerDiscount sellQuantity
+	 * @param payY     - CustomerDiscount payQuantity
 	 *
 	 * @return int - discountedQuantity - how many items they will get free
 	 */
 	private int calcDiscountQuantityForBuyXPayY(final int quantity, final int buyX, final int payY) {
-		log.trace("uantity={}, buyX={}, payY={}", quantity, buyX, payY);
+		log.trace("quantity={}, buyX={}, payY={}", quantity, buyX, payY);
 
 		int freeUnitsPerSet = buyX - payY;
 		int fullSets = quantity / buyX;

@@ -1,11 +1,10 @@
 HELP.md
 
 ### Maven ###
-target/
 !.mvn/wrapper/maven-wrapper.jar
+target/
 !**/src/main/**/target/
 !**/src/test/**/target/
-pom.xml.versionsBackup
 
 ### Gradle ###
 .gradle
@@ -44,6 +43,9 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### POM Backups ###
+pom.xml.versionsBackup
 
 ### Log files ###
 *.log*

@@ -2,13 +2,16 @@ package fi.ishtech.practice.oms.controller;
 
 import java.net.URI;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.Assert;
 import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,17 +28,19 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import fi.ishtech.practice.oms.payload.SalesOrderItemVo;
 import fi.ishtech.practice.oms.payload.SalesOrderVo;
 import fi.ishtech.practice.oms.payload.filter.SalesOrderFilterParams;
-import fi.ishtech.practice.oms.security.service.AuthInfoService;
 import fi.ishtech.practice.oms.service.SalesOrderItemService;
 import fi.ishtech.practice.oms.service.SalesOrderService;
 import fi.ishtech.practice.oms.spec.SalesOrderSpec;
+import fi.ishtech.springboot.jwtauth.service.AuthInfoService;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.validation.Valid;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Controller for SalesOrder
@@ -43,23 +48,20 @@ import lombok.extern.slf4j.Slf4j;
  * @author Muneer Ahmed Syed
  */
 @RestController
+@RequiredArgsConstructor
 @Slf4j
 public class SalesOrderController {
 
-	@Autowired
-	private AuthInfoService authInfoService;
-
-	@Autowired
-	private SalesOrderService salesOrderService;
-
-	@Autowired
-	private SalesOrderItemService salesOrderItemService;
+	private final AuthInfoService authInfoService;
+	private final SalesOrderService salesOrderService;
+	private final SalesOrderItemService salesOrderItemService;
 
 	/**
-	 * Gets public info of companies found by filter params
+	 * Finds SalesOrder(s) by search filters and pagination
 	 *
 	 * @param params   - {@link SalesOrderFilterParams}
 	 * @param pageable - {@link Pageable}
+	 *
 	 * @return {@link ResponseEntity}&lt;{@link Page}&lt;{@link SalesOrderVo}&gt;&gt;
 	 */
 	@GetMapping(path = "/api/v1/sales-orders", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -79,12 +81,17 @@ public class SalesOrderController {
 	}
 
 	/**
+	 * Find SalesOrder by id
 	 *
 	 * @param salesOrderId
+	 *
 	 * @return {@link ResponseEntity}&lt;{@link SalesOrderVo}&gt;
 	 */
 	@GetMapping(path = "/api/v1/sales-orders/{salesOrderId}", produces = MediaType.APPLICATION_JSON_VALUE)
-	@PostAuthorize("returnObject.body == null || returnObject.body.customerId == authentication.principal.id")
+	// @formatter:off
+	@PostAuthorize("hasAnyAuthority('ROLE_ADMIN')"
+			+ " || returnObject.body == null || returnObject.body.customerId == authentication.principal.id")
+	// @formatter:on
 	public ResponseEntity<SalesOrderVo> fetchSalesOrder(@PathVariable("salesOrderId") Long salesOrderId) {
 		log.info("salesOrderId:{}", salesOrderId);
 
@@ -97,6 +104,7 @@ public class SalesOrderController {
 	 * Creates new SalesOrder
 	 *
 	 * @param salesOrderVo - SalesOrderVo
+	 *
 	 * @return {@link ResponseEntity}&lt;{@link Long}&gt;
 	 */
 	// @formatter:off
@@ -104,25 +112,12 @@ public class SalesOrderController {
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	// @formatter:on
+	@PreAuthorize("hasAnyAuthority('ROLE_ADMIN') || #salesOrderVo.customerId == authentication.principal.id")
 	public ResponseEntity<Long> createSalesOrder(@Valid @RequestBody SalesOrderVo salesOrderVo) {
 		log.trace("salesOrderVo:{}", salesOrderVo);
 
 		Assert.isNull(salesOrderVo.getId(), "id should be null");
 		Assert.notEmpty(salesOrderVo.getSalesOrderItems(), "Should have at least one Sales Order Item");
-
-		if (authInfoService.isAdmin()) {
-			Assert.notNull(salesOrderVo.getCustomerId(), "customerId cannot be null");
-		} else {
-			var loggedInUserId = authInfoService.getUserId();
-			if (salesOrderVo.getCustomerId() == null) {
-				salesOrderVo.setCustomerId(loggedInUserId);
-			} else if (!salesOrderVo.getCustomerId().equals(loggedInUserId)) {
-				log.error("User({}) cannot create SalesOrder for others", loggedInUserId);
-				throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "Cannot create SalesOrder for others");
-			} else {
-				// ok
-			}
-		}
 
 		var result = salesOrderService.create(salesOrderVo);
 
@@ -141,6 +136,7 @@ public class SalesOrderController {
 	 * Creates new SalesOrderItem
 	 *
 	 * @param salesOrderItemVo - SalesOrderItemVo
+	 *
 	 * @return {@link ResponseEntity}&lt;{@link Long}&gt;
 	 */
 	// @formatter:off
@@ -154,8 +150,8 @@ public class SalesOrderController {
 		Assert.isNull(salesOrderItemVo.getId(), "id should be null");
 		Assert.notNull(salesOrderItemVo.getSalesOrderId(), "salesOrderId cannot be null");
 
-		var salesOderId = salesOrderItemVo.getSalesOrderId();
-		var salesOrder = salesOrderService.findOneByIdOrElseThrow(salesOderId);
+		var salesOrderId = salesOrderItemVo.getSalesOrderId();
+		var salesOrder = salesOrderService.findOneByIdOrElseThrow(salesOrderId);
 		// TODO: this throws 404, it is better to throw 400
 
 		if (authInfoService.isAdmin()) {
@@ -176,13 +172,21 @@ public class SalesOrderController {
 		URI uri = ServletUriComponentsBuilder
 					.fromCurrentContextPath()
 					.path("/api/v1/sales-orders/{salesOrderId}")
-					.buildAndExpand(salesOderId)
+					.buildAndExpand(salesOrderId)
 					.toUri();
 		// @formatter:on
 
 		return ResponseEntity.status(HttpStatus.OK).location(uri).body(result.getId());
 	}
 
+	/**
+	 * Delete existing SalesOrderItem and updates parent SalesOrder amounts and discounts
+	 *
+	 * @param salesOrderItemId
+	 * @param quantity
+	 *
+	 * @return {@link ResponseEntity}&lt;{@link Void}&gt;
+	 */
 	// @formatter:off
 	@Operation(summary = "Delete existing SalesOrderItem and Updates parent SalesOrder amounts and discounts")
 	@ApiResponses(value = {
@@ -198,18 +202,52 @@ public class SalesOrderController {
 	public ResponseEntity<Void> deleteSalesOrderItemById(@PathVariable Long salesOrderItemId) {
 		log.debug("Deleting SalesOrderItem({})", salesOrderItemId);
 
+		checkAdminOrOwnerOfSalesOrderItem(salesOrderItemId);
+
 		salesOrderItemService.deleteById(salesOrderItemId);
 
 		return new ResponseEntity<Void>(HttpStatus.GONE);
 	}
 
+	/**
+	 * Update quantity in existing SalesOrderItem and its amounts updates parent SalesOrder amounts and discounts
+	 *
+	 * @param salesOrderItemId
+	 * @param quantity
+	 *
+	 * @return {@link ResponseEntity}&lt;{@link Void}&gt;
+	 */
 	@PatchMapping(path = "/api/v1/sales-orders/sales-order-items/{salesOrderItemId}")
 	public ResponseEntity<Void> updateSalesOrderItemQuantityById(@PathVariable Long salesOrderItemId,
 			@RequestParam Integer quantity) {
-		log.debug("Updating SalesOrderitem({}) quantity to {}", salesOrderItemId, quantity);
+		log.debug("Updating SalesOrderItem({}) quantity to {}", salesOrderItemId, quantity);
+
+		checkAdminOrOwnerOfSalesOrderItem(salesOrderItemId);
 
 		salesOrderItemService.updateQuantityById(salesOrderItemId, quantity);
 
 		return ResponseEntity.ok().build();
 	}
+
+	/**
+	 * Throws {@link AccessDeniedException} unless the logged-in user is an admin or the customer of the SalesOrder of
+	 * the SalesOrderItem
+	 *
+	 * @param salesOrderItemId
+	 */
+	private void checkAdminOrOwnerOfSalesOrderItem(Long salesOrderItemId) {
+		if (authInfoService.isAdmin()) {
+			return;
+		}
+
+		var salesOrderItem = salesOrderItemService.findOneByIdOrElseThrow(salesOrderItemId);
+		var salesOrder = salesOrderService.findOneByIdOrElseThrow(salesOrderItem.getSalesOrderId());
+
+		var loggedInUserId = authInfoService.getUserId();
+		if (!salesOrder.getCustomerId().equals(loggedInUserId)) {
+			log.error("User({}) cannot change SalesOrderItem({}) of others", loggedInUserId, salesOrderItemId);
+			throw new AccessDeniedException("Cannot change SalesOrderItem of others");
+		}
+	}
+
 }

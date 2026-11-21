@@ -1,19 +1,28 @@
 package fi.ishtech.practice.oms.service.impl;
 
+import jakarta.persistence.EntityManager;
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.validation.annotation.Validated;
 
+import fi.ishtech.springboot.base.payload.filter.BaseStandardEntityFilterParams;
+import fi.ishtech.springboot.base.spec.BaseStandardSpec;
 import fi.ishtech.practice.oms.entity.CustomerDiscount;
 import fi.ishtech.practice.oms.enums.DiscountTypeEnum;
 import fi.ishtech.practice.oms.mapper.CustomerDiscountMapper;
 import fi.ishtech.practice.oms.payload.CustomerDiscountVo;
 import fi.ishtech.practice.oms.repo.CustomerDiscountRepo;
 import fi.ishtech.practice.oms.service.CustomerDiscountService;
-import jakarta.persistence.EntityManager;
-import jakarta.validation.Valid;
+import fi.ishtech.practice.oms.service.ProductService;
+import fi.ishtech.springboot.jwtauth.service.UserProfileService;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -23,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 @Transactional
+@Validated
 public class CustomerDiscountServiceImpl implements CustomerDiscountService {
 
 	@Autowired
@@ -33,6 +43,12 @@ public class CustomerDiscountServiceImpl implements CustomerDiscountService {
 
 	@Autowired
 	private CustomerDiscountMapper customerDiscountMapper;
+
+	@Autowired
+	private UserProfileService userProfileService;
+
+	@Autowired
+	private ProductService productService;
 
 	@Override
 	public EntityManager getEntityManager() {
@@ -49,9 +65,26 @@ public class CustomerDiscountServiceImpl implements CustomerDiscountService {
 		return customerDiscountMapper;
 	}
 
+	@Override
+	public CustomerDiscountVo findOneByIdAndMapToVoOrElseThrow(Long id) {
+		return customerDiscountMapper.toDetailVo(findOneByIdOrElseThrow(id));
+	}
+
+	@Override
+	public Page<CustomerDiscountVo> findAllAndMapToVo(BaseStandardSpec<CustomerDiscount, ? extends BaseStandardEntityFilterParams> spec,
+			Pageable pageable) {
+		return findAll(spec, pageable).map(customerDiscountMapper::toSemiDetailVo);
+	}
+
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@Override
 	public CustomerDiscount create(@Valid CustomerDiscountVo customerDiscountVo) {
+		Assert.isTrue(userProfileService.getRepo().existsById(customerDiscountVo.getCustomerId()),
+				() -> "Customer(" + customerDiscountVo.getCustomerId() + ") does not exist");
+		Assert.isTrue(customerDiscountVo.getProductId() == null
+				|| productService.existsById(customerDiscountVo.getProductId()),
+				() -> "Product(" + customerDiscountVo.getProductId() + ") does not exist");
+
 		CustomerDiscount customerDiscount = customerDiscountMapper.toNewEntity(customerDiscountVo);
 
 		customerDiscount = customerDiscountRepo.saveAndFlush(customerDiscount);

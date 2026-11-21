@@ -1,18 +1,25 @@
 package fi.ishtech.practice.oms.service.impl;
 
+import jakarta.persistence.EntityManager;
+import jakarta.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
+import org.springframework.validation.annotation.Validated;
 
+import fi.ishtech.springboot.base.payload.filter.BaseStandardEntityFilterParams;
+import fi.ishtech.springboot.base.spec.BaseStandardSpec;
 import fi.ishtech.practice.oms.entity.Product;
 import fi.ishtech.practice.oms.mapper.ProductMapper;
 import fi.ishtech.practice.oms.payload.ProductVo;
 import fi.ishtech.practice.oms.repo.ProductRepo;
 import fi.ishtech.practice.oms.service.ProductService;
-import io.jsonwebtoken.lang.Assert;
-import jakarta.persistence.EntityManager;
-import jakarta.validation.Valid;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -22,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 @Transactional
+@Validated
 public class ProductServiceImpl implements ProductService {
 
 	@Autowired
@@ -48,6 +56,17 @@ public class ProductServiceImpl implements ProductService {
 		return productMapper;
 	}
 
+	@Override
+	public ProductVo findOneByIdAndMapToVoOrElseThrow(Long id) {
+		return productMapper.toDetailVo(findOneByIdOrElseThrow(id));
+	}
+
+	@Override
+	public Page<ProductVo> findAllAndMapToVo(BaseStandardSpec<Product, ? extends BaseStandardEntityFilterParams> spec,
+			Pageable pageable) {
+		return findAll(spec, pageable).map(productMapper::toSemiDetailVo);
+	}
+
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	@Override
 	public Product create(ProductVo productVo) {
@@ -61,7 +80,7 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public ProductVo updateAndMapToVo(@Valid ProductVo productVo) {
-		Assert.notNull(productVo.getId());
+		Assert.notNull(productVo.getId(), "Product id cannot be null");
 
 		Product product = this.findOneByIdOrElseThrow(productVo.getId());
 
@@ -74,7 +93,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public void deleteById(Long id) {
+	public void deactivateById(Long id) {
 		Product product = this.findOneByIdOrElseThrow(id);
 
 		product.setActive(false);
