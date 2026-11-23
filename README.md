@@ -8,7 +8,7 @@ Order Management system using Spring Boot Rest APIs
 - Other supported JDK versions:
   - JDK 21
   - JDK 17
-- Spring Boot: 4.0.x
+- Spring Boot: 4.1.x
 - Database: MariaDB / MySQL
 - Database Migration: Flyway
 - Containerization: Docker
