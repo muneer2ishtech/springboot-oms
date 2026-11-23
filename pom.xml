@@ -45,7 +45,7 @@
 	<properties>
 		<java.version>25</java.version>
 
-		<ishtech-springboot-jwtauth.version>4.0.0</ishtech-springboot-jwtauth.version>
+		<ishtech-springboot-jwtauth.version>5.0.0</ishtech-springboot-jwtauth.version>
 
 		<jjwt.version>0.13.0</jjwt.version>
 		<mapstruct.version>1.6.3</mapstruct.version>
